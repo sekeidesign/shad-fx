@@ -27,6 +27,10 @@ r/                     built output, committed
 scripts/check-registry.mjs
 ```
 
+`r` is shadcn's own name for built registry output — `shadcn build` defaults to
+`./public/r` and shadcn/ui serves its items at `ui.shadcn.com/r/<item>.json`.
+This repo is not a web app and has no `public/`, so it sits at the root.
+
 `registry/dither-fx/*` is not compiled here — no `tsconfig.json`, no
 dependencies. The files keep the consumer's alias imports (`@/lib/utils`,
 `@/hooks/use-prefers-reduced-motion`), which resolve in the installing project,
