@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "dither-fx-canvas",
-  "title": "Dither FX: canvas",
+  "title": "dither-fx: canvas",
   "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
   "description": "Fills its positioned parent with a pixelated canvas running a dither effect.",
   "registryDependencies": [

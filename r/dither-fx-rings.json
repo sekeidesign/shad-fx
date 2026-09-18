@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "dither-fx-rings",
-  "title": "Dither FX: rings",
+  "title": "dither-fx: rings",
   "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
   "description": "Concentric rings pulsing out from an anchor.",
   "registryDependencies": [

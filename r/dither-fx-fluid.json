@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "dither-fx-fluid",
-  "title": "Dither FX: fluid",
+  "title": "dither-fx: fluid",
   "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
   "description": "Sloshing liquid level with rising bubbles.",
   "registryDependencies": [

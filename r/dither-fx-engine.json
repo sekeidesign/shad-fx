@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "dither-fx-engine",
-  "title": "Dither FX: engine",
+  "title": "dither-fx: engine",
   "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
   "description": "Bayer-dithered canvas loop, seeded RNG and the colour helpers every effect builds on.",
   "files": [

@@ -1,4 +1,4 @@
-# Dither FX
+# dither-fx
 
 Ordered-dither canvas effects for React: fire, lightning, sonar rings, a light
 beam and a sloshing fluid, each painted as Bayer-thresholded cells over a
@@ -6,7 +6,7 @@ pixelated canvas. Distributed through a [shadcn](https://ui.shadcn.com)
 registry — the files are copied into your project, not added as a dependency.
 
 <!-- TODO: drop demo.gif (or demo.png) in the repo root and uncomment:
-![Dither FX](demo.gif)
+![dither-fx](demo.gif)
 -->
 
 ```bash

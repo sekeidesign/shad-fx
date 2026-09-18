@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "dither-fx-bolt",
-  "title": "Dither FX: bolt",
+  "title": "dither-fx: bolt",
   "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
   "description": "Intermittent lightning arcs on a randomised interval.",
   "registryDependencies": [

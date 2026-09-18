@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "dither-fx",
-  "title": "Dither FX",
+  "title": "dither-fx",
   "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
   "description": "The canvas, every effect, and a barrel that re-exports them.",
   "registryDependencies": [

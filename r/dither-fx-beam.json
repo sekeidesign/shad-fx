@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "dither-fx-beam",
-  "title": "Dither FX: beam",
+  "title": "dither-fx: beam",
   "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
   "description": "Directional beam with drifting motes.",
   "registryDependencies": [
