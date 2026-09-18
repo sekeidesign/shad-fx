@@ -45,7 +45,8 @@
 					"type": "registry:lib",
 					"target": "@components/dither-fx/effects/particles.ts"
 				}
-			]
+			],
+			"docs": "The ordered-dither rendering derives from dither-kit (MIT, https://github.com/Boring-Software-Inc/dither-kit). See https://github.com/sekeidesign/dither-fx/blob/main/NOTICE.md"
 		},
 		{
 			"name": "dither-fx-canvas",
