@@ -10,29 +10,29 @@ registry — the files are copied into your project, not added as a dependency.
 -->
 
 ```bash
-npx shadcn@latest add sekeidesign/dither-fx/dither-fx
+npx shadcn@latest add @sekei/dither-fx
 ```
 
 Docs, playground and gallery: [sekei.xyz/dither-fx](https://www.sekei.xyz/dither-fx)
 
 ## Install
 
-The line above works as soon as the repo is public, with no configuration. The
-namespaced form is the shorter one to remember:
+Take the whole library, or one effect:
 
 ```bash
-npx shadcn@latest add @sekei/dither-fx
+npx shadcn@latest add @sekei/dither-fx        # canvas + every effect + barrel
+npx shadcn@latest add @sekei/dither-fx-fire   # canvas + fire only
 ```
 
-`@sekei` resolves from the shadcn registry directory. Until that listing lands,
-register it once per project:
+Nothing to configure. `@sekei` is in the shadcn registry directory, so the CLI
+resolves it and writes the `registries` entry into your `components.json`
+itself. To pin it yourself instead:
 
 ```bash
 npx shadcn registry add @sekei=https://www.sekei.xyz/registry/{name}.json
 ```
 
-That writes a `registries` entry into your `components.json` (or `package.json`,
-whichever it finds — the CLI reads both). By hand it is:
+Or by hand, in `components.json` or `package.json` — the CLI reads both:
 
 ```json
 {
@@ -42,11 +42,11 @@ whichever it finds — the CLI reads both). By hand it is:
 }
 ```
 
-Take the whole library or one effect:
+This repo is also a registry on its own terms, so the `owner/repo/item` form
+works without touching any config:
 
 ```bash
-npx shadcn@latest add @sekei/dither-fx        # canvas + every effect + barrel
-npx shadcn@latest add @sekei/dither-fx-fire   # canvas + fire only
+npx shadcn@latest add sekeidesign/dither-fx/dither-fx
 ```
 
 Files land under `components/dither-fx/` and `hooks/`, following your
