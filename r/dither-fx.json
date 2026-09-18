@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "dither-fx",
+  "title": "Dither FX",
+  "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+  "description": "The canvas, every effect, and a barrel that re-exports them.",
+  "registryDependencies": [
+    "sekeidesign/dither-fx/dither-fx-fire",
+    "sekeidesign/dither-fx/dither-fx-rings",
+    "sekeidesign/dither-fx/dither-fx-beam",
+    "sekeidesign/dither-fx/dither-fx-bolt",
+    "sekeidesign/dither-fx/dither-fx-fluid"
+  ],
+  "files": [
+    {
+      "path": "registry/dither-fx/index.ts",
+      "content": "export { DitherCanvas, type DitherCanvasProps } from \"./dither-canvas\";\nexport { beam, type BeamOptions } from \"./effects/beam\";\nexport { bolt, type BoltOptions } from \"./effects/bolt\";\nexport { fire, type FireOptions } from \"./effects/fire\";\nexport { fluid, type FluidOptions } from \"./effects/fluid\";\nexport { rings, type RingsOptions } from \"./effects/rings\";\nexport {\n\ttype Anchor,\n\ttype DitherEffect,\n\ttype DitherFrame,\n\tDitherEngine,\n\ttype EngineOptions,\n\thex,\n\tmix,\n\tPainter,\n\ttype Rgb,\n\ttype RgbInput,\n\ttoRgb,\n} from \"./engine\";\n",
+      "type": "registry:lib",
+      "target": "@components/dither-fx/index.ts"
+    }
+  ],
+  "docs": "Everything imports from `@/components/dither-fx`.",
+  "categories": [
+    "dither-fx"
+  ],
+  "type": "registry:ui"
+}

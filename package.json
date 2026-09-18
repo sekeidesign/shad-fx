@@ -1,0 +1,6 @@
+{
+	"scripts": {
+		"registry:build": "npx -y shadcn@4.21.0 build --output r",
+		"registry:check": "node scripts/check-registry.mjs"
+	}
+}

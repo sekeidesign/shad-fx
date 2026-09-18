@@ -1,0 +1,5 @@
+node_modules
+.DS_Store
+
+# No dependencies to lock; pnpm writes one anyway when running a script.
+pnpm-lock.yaml
