@@ -1,8 +1,8 @@
 # dither-fx
 
 Ordered-dither canvas effects for React: fire, lightning, sonar rings, a light
-beam and a sloshing fluid, each painted as Bayer-thresholded cells over a
-pixelated canvas. Distributed through a [shadcn](https://ui.shadcn.com)
+beam, a sloshing fluid, rain and snow, each painted as Bayer-thresholded cells
+over a pixelated canvas. Distributed through a [shadcn](https://ui.shadcn.com)
 registry — the files are copied into your project, not added as a dependency.
 
 <!-- TODO: drop demo.gif (or demo.png) in the repo root and uncomment:
@@ -63,6 +63,8 @@ Files land under `components/dither-fx/` and `hooks/`, following your
 | `dither-fx-beam` | Canvas |
 | `dither-fx-bolt` | Canvas |
 | `dither-fx-fluid` | Canvas |
+| `dither-fx-rain` | Canvas |
+| `dither-fx-snow` | Canvas |
 | `dither-fx-engine` | Nothing — painter, seeded RNG, colour helpers |
 | `use-prefers-reduced-motion` | Nothing |
 
@@ -118,6 +120,8 @@ or an `[r, g, b]` tuple.
 | `rings` | `color`, `origin`, `interval`, `speed`, `width` |
 | `fluid` | `color`, `level`, `slosh`, `tempo`, `bubbles` |
 | `beam` | `color`, `origin` (x only), `spread`, `motes` |
+| `rain` | `color`, `drops`, `speed`, `slant`, `length` |
+| `snow` | `color`, `flakes`, `speed`, `sway`, `settle` |
 
 `origin` and `target` take an `Anchor`: a `[x, y]` pair in 0–1 of the box, or a
 getter, which is re-read on every resize so an effect can track something
@@ -128,8 +132,8 @@ measured from the DOM.
 `DitherCanvas` reads `prefers-reduced-motion` through `useSyncExternalStore`, so
 it is correct on the server and updates when the setting changes. Under reduce,
 each effect paints one settled frame and stops: fire is pre-warmed and still,
-rings sit at three fixed radii, particles are dropped. Nothing animates and the
-frame loop parks.
+rings sit at three fixed radii, rain and snow hang mid-fall, particles are
+dropped. Nothing animates and the frame loop parks.
 
 ## Cost
 

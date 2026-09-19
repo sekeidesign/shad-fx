@@ -184,6 +184,50 @@
 			]
 		},
 		{
+			"name": "dither-fx-rain",
+			"type": "registry:lib",
+			"title": "dither-fx: rain",
+			"description": "Slanted streaks of rain, splashing on the floor.",
+			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"categories": [
+				"dither-fx",
+				"effects"
+			],
+			"version": "0.1.0",
+			"registryDependencies": [
+				"sekeidesign/dither-fx/dither-fx-canvas"
+			],
+			"files": [
+				{
+					"path": "registry/dither-fx/effects/rain.ts",
+					"type": "registry:lib",
+					"target": "@components/dither-fx/effects/rain.ts"
+				}
+			]
+		},
+		{
+			"name": "dither-fx-snow",
+			"type": "registry:lib",
+			"title": "dither-fx: snow",
+			"description": "Drifting flakes settling into a drift along the floor.",
+			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"categories": [
+				"dither-fx",
+				"effects"
+			],
+			"version": "0.1.0",
+			"registryDependencies": [
+				"sekeidesign/dither-fx/dither-fx-canvas"
+			],
+			"files": [
+				{
+					"path": "registry/dither-fx/effects/snow.ts",
+					"type": "registry:lib",
+					"target": "@components/dither-fx/effects/snow.ts"
+				}
+			]
+		},
+		{
 			"name": "dither-fx",
 			"type": "registry:ui",
 			"title": "dither-fx",
@@ -199,7 +243,9 @@
 				"sekeidesign/dither-fx/dither-fx-rings",
 				"sekeidesign/dither-fx/dither-fx-beam",
 				"sekeidesign/dither-fx/dither-fx-bolt",
-				"sekeidesign/dither-fx/dither-fx-fluid"
+				"sekeidesign/dither-fx/dither-fx-fluid",
+				"sekeidesign/dither-fx/dither-fx-rain",
+				"sekeidesign/dither-fx/dither-fx-snow"
 			],
 			"files": [
 				{
