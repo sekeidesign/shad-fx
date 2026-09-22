@@ -81,3 +81,38 @@ straight after a push can serve the previous build.
 The docs page, playground and gallery live in `sekeidesign/sekei-xyz` at
 `/dither-fx`. That site also vendors a copy of these files under
 `components/dither-fx/`; fix bugs here and re-add there.
+
+## Listing `@sekei` in the shadcn registry directory
+
+The directory (<https://ui.shadcn.com/docs/registry/registry-index>) is what
+lets `npx shadcn add @sekei/dither-fx` work with no `registries` entry. Its
+requirements, and where this repo stands on each:
+
+1. Open source and publicly accessible — the repo must be public, since every
+   `registryDependencies` entry resolves through `raw.githubusercontent.com`.
+2. `registry.json` must conform to the registry schema — `registry:build`
+   validates it, and CI runs `registry:check`.
+3. Flat: `/registry.json` and `/<item>.json` at the registry root — `r/` is
+   flat and served at `www.sekei.xyz/registry/*`.
+4. `files` in the index must carry no `content` — `r/registry.json` does not.
+   The per-item files do, which is what an install needs.
+
+The health monitor also scores "a matching registry name": `name` in
+`registry.json` (`sekei`) must match the namespace (`@sekei`) once the `@` is
+stripped. Keep them in step.
+
+To submit, open a pull request against <https://github.com/shadcn-ui/ui> that
+appends this to `apps/v4/registry/directory.json`, then run
+`pnpm validate:registries` there. `logo` is a required inline SVG; swap the
+placeholder for the real mark before submitting.
+
+```json
+{
+	"name": "@sekei",
+	"homepage": "https://www.sekei.xyz/dither-fx",
+	"url": "https://www.sekei.xyz/registry/{name}.json",
+	"description": "Ordered-dither canvas effects for React: fire, lightning, sonar rings, a light beam, a sloshing fluid, rain and snow, copied into your project as source.",
+	"author": "Piergiorgio Gonni",
+	"logo": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='var(--foreground)'><rect width='32' height='32' rx='8' fill-opacity='.12'/><path d='M8 8h4v4H8zM20 8h4v4h-4zM14 14h4v4h-4zM8 20h4v4H8zM20 20h4v4h-4z'/></svg>"
+}
+```
