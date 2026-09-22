@@ -100,7 +100,7 @@ constant.
 | --- | --- | --- |
 | `effect` | — | The effect to run. Keep the reference stable. |
 | `active` | `true` | Eases in and out. Drive it from hover for a reveal. |
-| `cell` | `3` | CSS px per dither cell. Lower is finer and costlier. |
+| `cell` | `2` | CSS px per dither cell. Lower is finer and costlier. |
 | `seed` | `1` | Seeds the RNG, so a given seed replays identically. |
 | `maxCols` / `maxRows` | `640` / `400` | Ceiling on the backing grid. |
 | `className` | — | Merged onto the wrapper. |
@@ -110,22 +110,81 @@ never the only carrier of meaning.
 
 ### Effects
 
-Every effect is a factory returning a `DitherEffect`. Colours take a hex string
-or an `[r, g, b]` tuple.
+Every effect is a factory returning a `DitherEffect`, and every option is
+optional. `RgbInput` is a hex string or an `[r, g, b]` tuple. Where a count is
+given at full intensity, it scales down as the effect eases out.
 
-| Effect | Options |
-| --- | --- |
-| `fire` | `colors` (cold → hot), `height`, `rate`, `embers` |
-| `bolt` | `color`, `interval` as `[min, max]` seconds, `target`, `rate` |
-| `rings` | `color`, `origin`, `interval`, `speed`, `width` |
-| `fluid` | `color`, `level`, `slosh`, `tempo`, `bubbles` |
-| `beam` | `color`, `origin` (x only), `spread`, `motes` |
-| `rain` | `color`, `drops`, `speed`, `slant`, `length` |
-| `snow` | `color`, `flakes`, `speed`, `sway`, `settle` |
+#### `fire`
 
-`origin` and `target` take an `Anchor`: a `[x, y]` pair in 0–1 of the box, or a
-getter, which is re-read on every resize so an effect can track something
-measured from the DOM.
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `colors` | `[RgbInput, RgbInput, RgbInput]` | `["#e5343a", "#f05100", "#fcbb00"]` | Cold to hot: the tips, the body, the base. |
+| `height` | `number \| () => number` | `0.5` | Fraction of the height the flames reach at full intensity. A getter is re-read every frame. |
+| `rate` | `number` | `36` | Simulation steps per second. Lower reads chunkier. |
+| `embers` | `number` | `8` | Embers aloft at once, at full intensity. |
+
+#### `bolt`
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `color` | `RgbInput` | `"#fcbb00"` | Colour of the strike and its afterglow. |
+| `interval` | `[number, number]` | `[0.6, 1.4]` | Seconds between strikes at full intensity, as a `[min, max]` range. |
+| `target` | `Anchor` | `[0.5, 0.43]` | What the strikes aim for. They land just short of it or on it. |
+| `rate` | `number` | `30` | Simulation steps per second. Lower reads chunkier. |
+
+#### `rings`
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `color` | `RgbInput` | `"#ac4bff"` | Colour of the rings. |
+| `origin` | `Anchor` | `[0.5, 0.42]` | The point every ring expands from. |
+| `interval` | `number` | `1.15` | Seconds between rings. |
+| `speed` | `number` | `0.45` | Expansion speed as a fraction of the height per second. |
+| `width` | `number` | `2.6` | Ring thickness in cells. |
+
+#### `fluid`
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `color` | `RgbInput` | `"#3080ff"` | Colour of the liquid and its bubbles. |
+| `level` | `number \| () => number` | `0.2` | Resting depth as a fraction of the height, at full intensity. A getter is re-read every frame. |
+| `slosh` | `number` | `0.09` | How far the surface tilts at either edge, as a fraction of the height. |
+| `tempo` | `number` | `0.15` | Slosh cycles per second. |
+| `bubbles` | `number` | `12` | Bubbles rising at once, at full intensity. |
+
+#### `beam`
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `color` | `RgbInput` | `"#3080ff"` | Colour of the light and its motes. |
+| `origin` | `Anchor` | `[0.5, 0.5]` | Only the `x` is used: where the light enters at the top edge. |
+| `target` | `Anchor` | — | Only the `x` is used: where the axis meets the bottom edge. Unset, the beam falls straight down from `origin`; set, it leans toward this point. |
+| `spread` | `number` | `0.5` | Half-width of the cone at the bottom edge, as a fraction of the width. |
+| `motes` | `number` | `16` | Dust motes drifting in the light. |
+
+#### `rain`
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `color` | `RgbInput` | `"#bedbff"` | Colour of the drops and splashes. |
+| `drops` | `number` | `64` | Drops in flight at once, at full intensity. |
+| `speed` | `number` | `1.4` | Fall speed of the nearest drops as a fraction of the height per second. |
+| `slant` | `number \| () => number` | `0.25` | Cells drifted sideways per cell fallen. Negative blows left. A getter is re-read every frame. |
+| `length` | `number` | `6` | Streak length of the nearest drops, in cells. |
+
+#### `snow`
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `color` | `RgbInput` | `"#d1d5dc"` | Colour of the flakes and the drift. |
+| `flakes` | `number` | `40` | Flakes aloft at once. |
+| `speed` | `number` | `0.12` | Fall speed of the nearest flakes as a fraction of the height per second. |
+| `sway` | `number` | `0.6` | Sideways wander as a fraction of the fall speed. |
+| `settle` | `number` | `0.12` | Depth the snow settles to along the floor, as a fraction of the height. `0` for none. |
+
+`origin` and `target` take an `Anchor`: an `[x, y]` pair in 0–1 of the box, or a
+getter, which is re-read every frame, so an effect can follow something that
+moves without being rebuilt and losing what it has already simulated.
 
 ## Reduced motion
 
