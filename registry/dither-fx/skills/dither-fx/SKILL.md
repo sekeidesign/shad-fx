@@ -51,11 +51,15 @@ Four things in there matter, and each is the cause of a common bug:
   `overflow-hidden` rounded corners leak.
 - **Content sits above it.** The canvas is painted first, so siblings after it
   are already on top in DOM order, but a sibling that is `static` loses to a
-  positioned canvas. Give text and controls `relative` (or a `z-index`).
+  positioned canvas. Give text and controls `relative` (or a `z-index`). The
+  canvas is transparent wherever nothing is painted, so the parent's
+  background shows through; when copy has to stay readable over a busy
+  effect, put a gradient scrim between the two rather than dimming the effect.
 - **The effect is built once.** A new `effect` reference restarts the
   simulation: the canvas survives, but flames, drops and rings reset. Use
-  `useMemo` with the options in its dependency array, or module scope when the
-  options are constant. Never call `fire()` inline in JSX.
+  `useMemo` with the reactive options in its dependency array, or module scope
+  when the options are constant. A getter that reads a ref is not reactive,
+  so `[]` is right for it. Never call `fire()` inline in JSX.
 - **The component that builds the effect is a client component.** An effect is
   an object of functions, which cannot cross the server/client boundary as a
   prop. `DitherCanvas` is already `"use client"`, but whoever calls `fire()`
@@ -81,8 +85,22 @@ state, so pointer moves do not re-render:
 ```tsx
 const at = useRef<readonly [number, number]>([0.5, 0.5]);
 const effect = useMemo(() => rings({ origin: () => at.current }), []);
-// onPointerMove: at.current = [e.nativeEvent.offsetX / w, e.nativeEvent.offsetY / h]
+
+function track(e: PointerEvent<HTMLDivElement>) {
+  // Measure against the card itself: offsetX/offsetY would be relative to
+  // whichever child the pointer is over, and jump between them.
+  const box = e.currentTarget.getBoundingClientRect();
+  at.current = [
+    Math.min(1, Math.max(0, (e.clientX - box.left) / box.width)),
+    Math.min(1, Math.max(0, (e.clientY - box.top) / box.height)),
+  ];
+}
+// <div onPointerEnter={(e) => { track(e); setHover(true); }} onPointerMove={track} …>
 ```
+
+Set the ref on `pointerenter` as well as `pointermove`. Move events only
+start once the pointer is inside, so without it the first ring of every hover
+spawns wherever the pointer last left.
 
 Colours are `RgbInput`: a hex string or an `[r, g, b]` tuple. CSS variables do
 not work here because the painter writes raw bytes. Pick a hex from the theme,
@@ -107,7 +125,7 @@ or read the computed colour once and pass it in.
 | --- | --- | --- |
 | `fire` | Flames rising from the bottom edge with embers | `colors` (cold, body, base), `height` |
 | `bolt` | Lightning strikes toward a point, with afterglow | `target`, `interval` |
-| `rings` | Sonar rings expanding from a point | `origin`, `interval`, `speed` |
+| `rings` | Sonar rings expanding from a point | `origin`, `interval`, `width` (thinner reads quieter over text) |
 | `fluid` | Liquid pooled along the floor, sloshing | `level` (bind a getter to progress), `slosh` |
 | `beam` | A cone of light from the top edge with motes | `origin`, `target` (lean), `spread` |
 | `rain` | Slanted streaks splashing on the floor | `slant` (negative blows left), `drops` |
