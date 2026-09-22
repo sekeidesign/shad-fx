@@ -11,7 +11,9 @@ into a grid of cells. Read these before writing, in this order; they are short:
 
 1. `components/dither-fx/engine.ts` — the contract, the painter, the loop.
 2. `components/dither-fx/effects/fire.ts` — a simulation with its own state.
-3. `components/dither-fx/effects/beam.ts` — a scene driven purely by intensity.
+3. `components/dither-fx/effects/snow.ts` — a scene driven by intensity, with
+   a built still frame for reduced motion. `beam.ts` is the same shape at its
+   simplest.
 4. `components/dither-fx/effects/particles.ts` — the shared particle helpers.
 
 ## The contract
@@ -67,7 +69,15 @@ dark = false;
 ```
 
 Pick the shape first. Mixing them is how effects end up flickering on the way
-out or never parking.
+out or never parking. The test is what happens to a transient on the way out:
+a shooting star inside a starfield, a splash inside a puddle. If it may simply
+fade with the scene, the effect is intensity-driven and the transient is just
+more pixels scaled by `intensity`. If it has to finish (rain's drops land,
+rings reach the edge), the whole effect is a simulation, field included.
+
+In an intensity-driven effect the order of the first two branches in `step`
+matters: check `intensity <= 0.002` and clear *before* the `reduced` branch,
+or the still frame never clears on ease-out. snow.ts has it right.
 
 ## Painting
 
@@ -84,8 +94,9 @@ with `px.clear()`. Then:
   end to end breaks into dots below the threshold; rain blends the near part
   of each streak and dithers only the tail.
 - `px.glint(x, y, color, alpha, arms)` — a sparkle: centre plus four arms that
-  flare in with `arms` (0–1). Pair with `twinkle` and `arms` from
-  `particles.ts` for a wink that flashes rather than pulses.
+  flare in with `arms` (0–1). Pair with `twinkle(t, phase, hz)` and `arms(tw)`
+  from `particles.ts` for a wink that flashes rather than pulses; `hz` is the
+  per-particle wink speed.
 - `px.inside(x, y)` is checked for you in every write; drawing off-grid is a
   no-op, so let particles fly past the edges and cull them later.
 
@@ -99,13 +110,20 @@ there so the still frame can still fade in and out.
   and a hero. The grid is capped at 640×400, so a per-cell pass per frame is
   affordable; a per-cell pass per particle is not.
 - Use `dt` for motion and `t` for oscillation. Never read the clock.
-- Use only the `rand` handed to `resize` and `step`. It is seeded from the
-  canvas `seed`, which is what makes a given seed replay identically; a
-  `Math.random()` anywhere breaks that promise silently.
+- Use only the `rand` handed to `resize` and `step`. They are the same seeded
+  stream; the shipped effects keep the one from `resize` in a closure
+  variable. It is seeded from the canvas `seed`, which is what makes a given
+  seed replay identically; a `Math.random()` call anywhere breaks that promise
+  silently. The shipped effects initialise that variable to `Math.random` as
+  a placeholder, which is never called because `resize` always runs before
+  `step`; `() => 0.5` does the same job without tripping a grep.
 - `resize` is called on mount, on every box change and when the effect is
-  swapped in. Rebuild your fields there (`new Float32Array(cols * rows)`),
-  reset accumulators and clear particles. Do not keep state that assumes the
-  old grid.
+  swapped in. Anything in cells (a `Float32Array` field, particle positions)
+  is wrong for the new grid, so rebuild it there and reset accumulators. State
+  kept as fractions of the box can survive a resize if a reshuffle would be
+  visible: a starfield that re-rolls on every responsive step looks broken,
+  while snow reseeding its flakes does not. Choose per effect, and say which
+  in a comment.
 
 ## Anchors and steerable options
 
@@ -162,6 +180,41 @@ rebuild; the effect file itself is identical.
 
 ## Before calling it done
 
+Most of this can be checked without a browser. `Painter` needs only a global
+`ImageData`, so an effect runs in Node under `npx tsx`:
+
+```ts
+// scratch/smoke.mts — npx tsx scratch/smoke.mts
+import { Painter, seededRandom } from "../components/dither-fx/engine";
+import { stars as effect } from "../components/dither-fx/effects/stars";
+
+class ImageData {
+  data: Uint8ClampedArray;
+  constructor(public width: number, public height: number) {
+    this.data = new Uint8ClampedArray(width * height * 4);
+  }
+}
+(globalThis as { ImageData?: unknown }).ImageData = ImageData;
+
+const cols = 160, rows = 100;
+const fx = effect();
+const rand = seededRandom(1);
+const px = new Painter(cols, rows);
+fx.resize(cols, rows, rand);
+const lit = () => { let n = 0; for (let i = 3; i < px.image.data.length; i += 4) if (px.image.data[i]) n++; return n; };
+const step = (t: number, intensity: number, reduced = false) =>
+  fx.step({ px, cols, rows, t, dt: 1 / 60, intensity, reduced, rand });
+
+for (let i = 0; i < 180; i++) step(i / 60, 1);
+console.log("active: lit cells", lit());                       // > 0
+for (let i = 0; i < 180; i++) step(3 + i / 60, 0);
+console.log("eased out: lit", lit(), "idle", fx.idle(), "painting", step(7, 0)); // 0 true false
+step(8, 1, true); const a = px.image.data.slice(); step(9, 1, true);
+console.log("reduced: frames identical", a.every((v, i) => v === px.image.data[i])); // true
+```
+
+Then in the browser:
+
 - Ease in from `active={false}` to `true` and back. It should grow and drain,
   not snap, and the canvas should end empty.
 - Confirm it parks: with `active={false}` and the fade finished, no frame work
@@ -169,4 +222,5 @@ rebuild; the effect file itself is identical.
 - Toggle reduced motion in devtools: one still frame, nothing moving.
 - Resize the box: no crash, no ghost of the old grid.
 - Two canvases with the same `seed` show the same thing.
-- Search the file for `Math.random`, `Date.now` and `performance.now`. None.
+- Search the file for `Math.random`, `Date.now` and `performance.now`. The
+  only hit allowed is the pre-resize placeholder described above.
