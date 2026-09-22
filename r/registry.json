@@ -228,6 +228,46 @@
 			]
 		},
 		{
+			"name": "dither-fx-skill",
+			"type": "registry:file",
+			"title": "dither-fx: usage skill",
+			"description": "Agent skill: install, place and drive DitherCanvas and the effects correctly.",
+			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"categories": [
+				"dither-fx",
+				"skills"
+			],
+			"version": "0.1.0",
+			"docs": "Lands in .claude/skills/dither-fx/ so Claude Code picks it up in this project. Pair with dither-fx-effect-skill to write new effects.",
+			"files": [
+				{
+					"path": "registry/dither-fx/skills/dither-fx/SKILL.md",
+					"type": "registry:file",
+					"target": "~/.claude/skills/dither-fx/SKILL.md"
+				}
+			]
+		},
+		{
+			"name": "dither-fx-effect-skill",
+			"type": "registry:file",
+			"title": "dither-fx: effect authoring skill",
+			"description": "Agent skill: write a new effect against the engine contract, or rework how one simulates.",
+			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"categories": [
+				"dither-fx",
+				"skills"
+			],
+			"version": "0.1.0",
+			"docs": "Lands in .claude/skills/dither-fx-new-effect/. Covers the DitherEffect contract, the two effect shapes, the Painter, reduced motion and parking.",
+			"files": [
+				{
+					"path": "registry/dither-fx/skills/dither-fx-new-effect/SKILL.md",
+					"type": "registry:file",
+					"target": "~/.claude/skills/dither-fx-new-effect/SKILL.md"
+				}
+			]
+		},
+		{
 			"name": "dither-fx",
 			"type": "registry:ui",
 			"title": "dither-fx",
@@ -237,7 +277,7 @@
 				"dither-fx"
 			],
 			"version": "0.1.0",
-			"docs": "Everything imports from `@/components/dither-fx`.",
+			"docs": "Everything imports from `@/components/dither-fx`. Working with an agent? `npx shadcn@latest add @sekei/dither-fx-skill` installs a Claude Code skill for setting the effects up correctly.",
 			"registryDependencies": [
 				"sekeidesign/dither-fx/dither-fx-fire",
 				"sekeidesign/dither-fx/dither-fx-rings",

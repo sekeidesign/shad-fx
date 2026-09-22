@@ -23,6 +23,7 @@ reason to skip it.
 ```
 registry.json          source of truth, the build's input
 registry/dither-fx/    the files themselves
+registry/dither-fx/skills/  SKILL.md per skill item, installed to .claude/skills/
 r/                     built output, committed
 scripts/check-registry.mjs
 ```
@@ -56,9 +57,20 @@ being reachable. Do not rewrite them to `@sekei/...` or to absolute
 
 Leave `"utils"` bare. It resolves against shadcn/ui.
 
+## Skills
+
+`registry/dither-fx/skills/*/SKILL.md` ship as `registry:file` items whose
+`target` is `~/.claude/skills/<dir>/SKILL.md`; the CLI reads `~/` as the
+consumer's project root. They describe the API a second time, in prose, so an
+API change (an option renamed, a default moved, a contract method added) is
+not done until both skills say the same thing as the code. Keep them pointing
+at the JSDoc for detail rather than restating every table.
+
 ## Item names
 
-`dither-fx`, `dither-fx-<effect>`, `use-prefers-reduced-motion`. They are the
+`dither-fx`, `dither-fx-<effect>`, `use-prefers-reduced-motion`, and the two
+`registry:file` skills `dither-fx-skill` and `dither-fx-effect-skill`, whose
+`SKILL.md` files sit under `registry/dither-fx/skills/`. They are the
 publisher namespace's names (`@sekei/dither-fx-fire`), not the repo's, so the
 `dither-fx-` prefix stays even though `sekeidesign/dither-fx/dither-fx-fire`
 stutters. Renaming an item breaks every install command already written down.

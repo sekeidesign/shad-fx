@@ -67,6 +67,8 @@ Files land under `components/dither-fx/` and `hooks/`, following your
 | `dither-fx-snow` | Canvas |
 | `dither-fx-engine` | Nothing — painter, seeded RNG, colour helpers |
 | `use-prefers-reduced-motion` | Nothing |
+| `dither-fx-skill` | Nothing — a Claude Code skill, see below |
+| `dither-fx-effect-skill` | Nothing — a Claude Code skill, see below |
 
 ## Usage
 
@@ -185,6 +187,21 @@ given at full intensity, it scales down as the effect eases out.
 `origin` and `target` take an `Anchor`: an `[x, y]` pair in 0–1 of the box, or a
 getter, which is re-read every frame, so an effect can follow something that
 moves without being rebuilt and losing what it has already simulated.
+
+## Agent skills
+
+Two opt-in items install [skills](https://code.claude.com/docs/en/skills)
+into `.claude/skills/` so Claude Code knows the library the way this README
+does, from inside your project:
+
+```bash
+npx shadcn@latest add @sekei/dither-fx-skill          # set up and drive the effects
+npx shadcn@latest add @sekei/dither-fx-effect-skill   # write a new effect
+```
+
+The first covers placement, the stable-reference rule, anchors and cost. The
+second covers the `DitherEffect` contract, the two shapes an effect takes, the
+`Painter`, reduced motion and parking. Neither is pulled in by `dither-fx`.
 
 ## Reduced motion
 
