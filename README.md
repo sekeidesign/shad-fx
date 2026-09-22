@@ -67,8 +67,8 @@ Files land under `components/dither-fx/` and `hooks/`, following your
 | `dither-fx-snow` | Canvas |
 | `dither-fx-engine` | Nothing — painter, seeded RNG, colour helpers |
 | `use-prefers-reduced-motion` | Nothing |
-| `dither-fx-skill` | Nothing — a Claude Code skill, see below |
-| `dither-fx-effect-skill` | Nothing — a Claude Code skill, see below |
+| `use-fx-skill` | Nothing — a Claude Code skill, see below |
+| `create-fx-skill` | Nothing — a Claude Code skill, see below |
 
 ## Usage
 
@@ -195,8 +195,8 @@ into `.claude/skills/` so Claude Code knows the library the way this README
 does, from inside your project:
 
 ```bash
-npx shadcn@latest add @sekei/dither-fx-skill          # set up and drive the effects
-npx shadcn@latest add @sekei/dither-fx-effect-skill   # write a new effect
+npx shadcn@latest add @sekei/use-fx-skill      # set up and drive the effects
+npx shadcn@latest add @sekei/create-fx-skill   # write a new effect
 ```
 
 The first covers placement, the stable-reference rule, anchors and cost. The

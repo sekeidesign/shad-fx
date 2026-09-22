@@ -69,7 +69,7 @@ at the JSDoc for detail rather than restating every table.
 ## Item names
 
 `dither-fx`, `dither-fx-<effect>`, `use-prefers-reduced-motion`, and the two
-`registry:file` skills `dither-fx-skill` and `dither-fx-effect-skill`, whose
+`registry:file` skills `use-fx-skill` and `create-fx-skill`, whose
 `SKILL.md` files sit under `registry/dither-fx/skills/`. They are the
 publisher namespace's names (`@sekei/dither-fx-fire`), not the repo's, so the
 `dither-fx-` prefix stays even though `sekeidesign/dither-fx/dither-fx-fire`

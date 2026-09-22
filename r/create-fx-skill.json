@@ -1,6 +1,6 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "dither-fx-effect-skill",
+  "name": "create-fx-skill",
   "title": "dither-fx: effect authoring skill",
   "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
   "description": "Agent skill: write a new effect against the engine contract, or rework how one simulates.",

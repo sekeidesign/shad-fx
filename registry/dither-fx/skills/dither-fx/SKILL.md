@@ -138,5 +138,5 @@ Read that file before guessing at an option name.
 ## Extending
 
 To write a new effect, use the `dither-fx-new-effect` skill if it is installed
-(`npx shadcn@latest add @sekei/dither-fx-effect-skill`), or copy the shape of
+(`npx shadcn@latest add @sekei/create-fx-skill`), or copy the shape of
 `effects/fire.ts` and re-export from `components/dither-fx/index.ts`.

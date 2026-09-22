@@ -228,7 +228,7 @@
 			]
 		},
 		{
-			"name": "dither-fx-skill",
+			"name": "use-fx-skill",
 			"type": "registry:file",
 			"title": "dither-fx: usage skill",
 			"description": "Agent skill: install, place and drive DitherCanvas and the effects correctly.",
@@ -238,7 +238,7 @@
 				"skills"
 			],
 			"version": "0.1.0",
-			"docs": "Lands in .claude/skills/dither-fx/ so Claude Code picks it up in this project. Pair with dither-fx-effect-skill to write new effects.",
+			"docs": "Lands in .claude/skills/dither-fx/ so Claude Code picks it up in this project. Pair with create-fx-skill to write new effects.",
 			"files": [
 				{
 					"path": "registry/dither-fx/skills/dither-fx/SKILL.md",
@@ -248,7 +248,7 @@
 			]
 		},
 		{
-			"name": "dither-fx-effect-skill",
+			"name": "create-fx-skill",
 			"type": "registry:file",
 			"title": "dither-fx: effect authoring skill",
 			"description": "Agent skill: write a new effect against the engine contract, or rework how one simulates.",
@@ -277,7 +277,7 @@
 				"dither-fx"
 			],
 			"version": "0.1.0",
-			"docs": "Everything imports from `@/components/dither-fx`. Working with an agent? `npx shadcn@latest add @sekei/dither-fx-skill` installs a Claude Code skill for setting the effects up correctly.",
+			"docs": "Everything imports from `@/components/dither-fx`. Working with an agent? `npx shadcn@latest add @sekei/use-fx-skill` installs a Claude Code skill for setting the effects up correctly.",
 			"registryDependencies": [
 				"sekeidesign/dither-fx/dither-fx-fire",
 				"sekeidesign/dither-fx/dither-fx-rings",

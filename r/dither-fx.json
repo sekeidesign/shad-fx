@@ -21,7 +21,7 @@
       "target": "@components/dither-fx/index.ts"
     }
   ],
-  "docs": "Everything imports from `@/components/dither-fx`. Working with an agent? `npx shadcn@latest add @sekei/dither-fx-skill` installs a Claude Code skill for setting the effects up correctly.",
+  "docs": "Everything imports from `@/components/dither-fx`. Working with an agent? `npx shadcn@latest add @sekei/use-fx-skill` installs a Claude Code skill for setting the effects up correctly.",
   "categories": [
     "dither-fx"
   ],
