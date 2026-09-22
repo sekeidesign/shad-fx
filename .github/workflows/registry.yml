@@ -1,0 +1,19 @@
+name: Registry
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    name: r/ matches registry.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Offline and dependency-free; fails when r/ was not rebuilt after a
+      # change to registry.json or registry/. See AGENTS.md.
+      - run: node scripts/check-registry.mjs

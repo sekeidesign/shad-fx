@@ -4,7 +4,7 @@
 
 <https://github.com/Boring-Software-Inc/dither-kit>
 
-The dither-fx library in `components/dither-fx/` began from dither-kit's
+The dither-fx library in `registry/dither-fx/` began from dither-kit's
 ordered-dither rendering and is derived from it in these respects:
 
 - Drawing into a low-resolution backing canvas and scaling it up with
@@ -15,9 +15,10 @@ ordered-dither rendering and is derived from it in these respects:
 - Painting every cell at one of two alpha tiers of the same colour instead of
   leaving a hole where the cell does not clear the threshold.
 
-The effects themselves (fire, bolt, rings, fluid, beam), the `Painter` blitting
-through a single `ImageData`, the frame loop with its eased intensity and idle
-parking, and the reduced-motion handling are not from dither-kit.
+The effects themselves (fire, bolt, rings, fluid, beam, rain, snow), the
+`Painter` blitting through a single `ImageData`, the frame loop with its eased
+intensity and idle parking, and the reduced-motion handling are not from
+dither-kit.
 
 dither-kit declares `"license": "MIT"` in its package.json files. As of this
 writing it ships no LICENSE file and no copyright line, so there is no upstream
@@ -51,5 +52,5 @@ SOFTWARE.
 
 ## mulberry32
 
-The seeded random number generator in `components/dither-fx/engine.ts` is
+The seeded random number generator in `registry/dither-fx/engine.ts` is
 mulberry32 by Tommy Ettinger, released into the public domain.
