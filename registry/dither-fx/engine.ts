@@ -16,10 +16,10 @@ export const BAYER4: readonly number[] = [
 export const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
 
 /**
-  * A point as fractions of the canvas box. A getter is re-read every frame, so
-  * an effect can follow something that moves — a drag handle, a hovered element
-  * — without being rebuilt and losing what it has already simulated.
-  */
+ * A point as fractions of the canvas box. A getter is re-read every frame, so
+ * an effect can follow something that moves — a drag handle, a hovered element
+ * — without being rebuilt and losing what it has already simulated.
+ */
 export type Anchor = readonly [number, number] | (() => readonly [number, number]);
 
 export const resolveAnchor = (anchor: Anchor) =>
