@@ -23,9 +23,11 @@ reason to skip it.
 ```
 registry.json          source of truth, the build's input
 registry/shad-fx/      the files themselves
-  index.ts             top-level barrel, re-exports every renderer
+  index.ts             top-level barrel: every renderer and effect
+  engine.ts            frame loop, Surface/Renderer/FxEffect contracts, RNG, colour
+  effects/             one file per effect, renderer-agnostic, plus particles.ts
+  dither/              the ordered-dither renderer: Painter, DitherRenderer, DitherCanvas
   use-prefers-reduced-motion.ts   shared across renderers
-  dither/              the ordered-dither renderer: engine, canvas, effects
 r/                     built output, committed
 scripts/check-registry.mjs
 skills/                agent skills, installed with `npx skills add`, not shadcn
@@ -42,15 +44,18 @@ not in this one. Do not rewrite them to relative paths.
 
 ## Adding an effect
 
-1. Write `registry/shad-fx/dither/effects/<name>.ts`, exporting a factory that
-   returns a `DitherEffect` and an `<Name>Options` interface. Copy the shape of
+1. Write `registry/shad-fx/effects/<name>.ts`, exporting a factory that
+   returns an `FxEffect` and an `<Name>Options` interface. Copy the shape of
    `fire.ts`: `paint(frame)` per frame, `idle()` when nothing is changing, and a
-   settled single frame under reduced motion.
-2. Re-export it from `registry/shad-fx/dither/index.ts`.
-3. Add an item to `registry.json`: `type: "registry:lib"`, `version`, a
-   `registryDependencies` of `["sekeidesign/shad-fx/shad-fx-dither-canvas"]`,
-   and a file whose `target` is `@components/shad-fx/dither/effects/<name>.ts`.
-4. Add it to the `shad-fx-dither` aggregate item's `registryDependencies`.
+   settled single frame under reduced motion. Paint only through the four
+   `Surface` calls on `frame.px`, and import only from `../engine` and
+   `./particles`, never from a renderer. That is what keeps it runnable on
+   every renderer.
+2. Re-export it from `registry/shad-fx/index.ts`.
+3. Add an item `shad-fx-<name>` to `registry.json`: `type: "registry:lib"`,
+   `version`, a `registryDependencies` of `["sekeidesign/shad-fx/shad-fx-engine"]`,
+   and a file whose `target` is `@components/shad-fx/effects/<name>.ts`.
+4. Add it to the `shad-fx` aggregate item's `registryDependencies`.
 5. Rebuild and check, as above.
 
 Registry dependencies stay in `owner/repo/item` shorthand. They resolve from the
@@ -72,19 +77,28 @@ at the JSDoc for detail rather than restating every table.
 ## Adding a renderer
 
 A new technique (ASCII, say) gets its own folder, `registry/shad-fx/<renderer>/`,
-with its own engine, canvas, effects and `index.ts`, mirroring `dither/`. Items
-are `shad-fx-<renderer>-canvas`, `shad-fx-<renderer>-<effect>`, and an aggregate
-`shad-fx-<renderer>`. Add the aggregate to `shad-fx`'s `registryDependencies`
-and re-export the folder from `registry/shad-fx/index.ts`. When two renderers
+mirroring `dither/`: a class implementing `Surface` (what the four paint calls
+mean in this medium), a class implementing `Renderer` (size the backing store,
+put a frame on screen), a React canvas that hands both to `FxEngine`, and an
+`index.ts`. It reuses every effect as is. It is one item, `shad-fx-<renderer>`,
+depending on `shad-fx-engine`; add it to `shad-fx`'s `registryDependencies` and
+re-export the folder from `registry/shad-fx/index.ts`. When two renderers
 export the same symbol name, re-export them under namespaces there instead of
 `export *`. Extend both skills to cover it.
 
+Cells need not be square. A renderer whose cells are not (glyphs are roughly
+twice as tall as wide) will squash anything an effect measures in cells, such
+as rings' radii. When that matters, add the cell aspect to `FxFrame` and have
+the affected effects correct for it; adding a field does not break existing
+effects.
+
 ## Item names
 
-`shad-fx`, `shad-fx-<renderer>`, `shad-fx-<renderer>-<effect>`,
-and `use-prefers-reduced-motion`. They are the publisher namespace's names
-(`@sekei/shad-fx-dither-fire`), not the repo's, so the `shad-fx-` prefix stays
-even though `sekeidesign/shad-fx/shad-fx-dither-fire` stutters. Renaming an item
+`shad-fx`, `shad-fx-engine`, `shad-fx-<renderer>`, `shad-fx-<effect>`, and
+`use-prefers-reduced-motion`. A renderer's name and an effect's name share one
+space, so neither may take a name the other could want. They are the publisher
+namespace's names (`@sekei/shad-fx-fire`), not the repo's, so the `shad-fx-`
+prefix stays even though `sekeidesign/shad-fx/shad-fx-fire` stutters. Renaming an item
 breaks every install command already written down.
 
 shad-fx is not affiliated with shadcn or shadcn/ui. Keep the disclaimer in the
@@ -95,8 +109,8 @@ README, and do not use shadcn's logo or imply endorsement anywhere.
 In a scratch Next.js + Tailwind + shadcn project, from the default branch:
 
 ```bash
-npx shadcn@latest add sekeidesign/shad-fx/shad-fx-dither-fire
-npx shadcn@latest add @sekei/shad-fx-dither-fire
+npx shadcn@latest add sekeidesign/shad-fx/shad-fx-dither sekeidesign/shad-fx/shad-fx-fire
+npx shadcn@latest add @sekei/shad-fx-dither @sekei/shad-fx-fire
 ```
 
 Both must land identical files. `raw.githubusercontent.com` caches for roughly

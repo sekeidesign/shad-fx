@@ -3,14 +3,21 @@
   "name": "shad-fx",
   "title": "shad-fx",
   "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-  "description": "Every shad-fx renderer and effect, behind one barrel.",
+  "description": "The dither renderer, every effect, and a barrel that re-exports them.",
   "registryDependencies": [
-    "sekeidesign/shad-fx/shad-fx-dither"
+    "sekeidesign/shad-fx/shad-fx-dither",
+    "sekeidesign/shad-fx/shad-fx-fire",
+    "sekeidesign/shad-fx/shad-fx-rings",
+    "sekeidesign/shad-fx/shad-fx-beam",
+    "sekeidesign/shad-fx/shad-fx-bolt",
+    "sekeidesign/shad-fx/shad-fx-fluid",
+    "sekeidesign/shad-fx/shad-fx-rain",
+    "sekeidesign/shad-fx/shad-fx-snow"
   ],
   "files": [
     {
       "path": "registry/shad-fx/index.ts",
-      "content": "export * from \"./dither\";\n",
+      "content": "export * from \"./dither\";\nexport { beam, type BeamOptions } from \"./effects/beam\";\nexport { bolt, type BoltOptions } from \"./effects/bolt\";\nexport { fire, type FireOptions } from \"./effects/fire\";\nexport { fluid, type FluidOptions } from \"./effects/fluid\";\nexport { rain, type RainOptions } from \"./effects/rain\";\nexport { rings, type RingsOptions } from \"./effects/rings\";\nexport { snow, type SnowOptions } from \"./effects/snow\";\nexport {\n\ttype Anchor,\n\tclamp01,\n\ttype FxEffect,\n\tFxEngine,\n\ttype FxFrame,\n\thex,\n\tmix,\n\ttype Renderer,\n\tresolveAnchor,\n\ttype Rgb,\n\ttype RgbInput,\n\ttype Surface,\n\tseededRandom,\n\ttoRgb,\n} from \"./engine\";\n",
       "type": "registry:lib",
       "target": "@components/shad-fx/index.ts"
     }

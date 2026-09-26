@@ -3,9 +3,11 @@
 Canvas effects for React, distributed through a [shadcn](https://ui.shadcn.com)
 registry — the files are copied into your project, not added as a dependency.
 
-The first renderer is ordered dither: fire, lightning, sonar rings, a light
-beam, a sloshing fluid, rain and snow, each painted as Bayer-thresholded cells
-over a pixelated canvas. More techniques, such as ASCII, will sit alongside it.
+Effects and renderers are separate. An effect (fire, lightning, sonar rings, a
+light beam, a sloshing fluid, rain and snow) simulates and paints into a grid of
+cells; a renderer decides what a cell looks like. The first renderer is ordered
+dither, which draws each cell as a Bayer-thresholded pixel on a pixelated
+canvas. Others, such as ASCII, will run the same effects unchanged.
 
 > [!NOTE]
 > shad-fx is an independent project. It is not made, maintained or endorsed by
@@ -24,13 +26,14 @@ Docs, playground and gallery: [sekei.xyz/shad-fx](https://www.sekei.xyz/shad-fx)
 
 ## Install
 
-Take the whole library, one renderer, or one effect:
+Take the whole library, or a renderer and the effects you want:
 
 ```bash
-npx shadcn@latest add @sekei/shad-fx                # everything
-npx shadcn@latest add @sekei/shad-fx-dither         # dither canvas + every dither effect
-npx shadcn@latest add @sekei/shad-fx-dither-fire    # dither canvas + fire only
+npx shadcn@latest add @sekei/shad-fx                              # everything
+npx shadcn@latest add @sekei/shad-fx-dither @sekei/shad-fx-fire   # dither renderer + fire only
 ```
+
+An effect on its own has nothing to draw on, so always take a renderer with it.
 
 Nothing to configure. `@sekei` is in the shadcn registry directory, so the CLI
 resolves it and writes the `registries` entry into your `components.json`
@@ -58,23 +61,25 @@ npx shadcn@latest add sekeidesign/shad-fx/shad-fx
 ```
 
 Files land under `components/shad-fx/` and `hooks/`, following your
-`components.json` aliases.
+`components.json` aliases: renderers in `dither/`, effects in `effects/`. With
+the full library, import everything from `@/components/shad-fx`. With a
+renderer and a few effects, import from `@/components/shad-fx/dither` and
+`@/components/shad-fx/effects/<name>`.
 
 ## Items
 
 | Item | Pulls in |
 | --- | --- |
-| `shad-fx` | Every renderer below, plus a top-level `index.ts` barrel |
-| `shad-fx-dither` | Every dither item below, plus `dither/index.ts` |
-| `shad-fx-dither-canvas` | Engine, the reduced-motion hook, `utils` |
-| `shad-fx-dither-fire` | Canvas |
-| `shad-fx-dither-rings` | Canvas |
-| `shad-fx-dither-beam` | Canvas |
-| `shad-fx-dither-bolt` | Canvas |
-| `shad-fx-dither-fluid` | Canvas |
-| `shad-fx-dither-rain` | Canvas |
-| `shad-fx-dither-snow` | Canvas |
-| `shad-fx-dither-engine` | Nothing — painter, seeded RNG, colour helpers |
+| `shad-fx` | Every renderer and effect below, plus an `index.ts` barrel |
+| `shad-fx-dither` | The dither renderer: `DitherCanvas`. Pulls in the engine, the reduced-motion hook, `utils` |
+| `shad-fx-fire` | Engine |
+| `shad-fx-rings` | Engine |
+| `shad-fx-beam` | Engine |
+| `shad-fx-bolt` | Engine |
+| `shad-fx-fluid` | Engine |
+| `shad-fx-rain` | Engine |
+| `shad-fx-snow` | Engine |
+| `shad-fx-engine` | Nothing — the frame loop, the effect contract, seeded RNG, colour helpers |
 | `use-prefers-reduced-motion` | Nothing |
 
 ## Usage
@@ -119,7 +124,7 @@ never the only carrier of meaning.
 
 ### Effects
 
-Every effect is a factory returning a `DitherEffect`, and every option is
+Every effect is a factory returning an `FxEffect`, and every option is
 optional. `RgbInput` is a hex string or an `[r, g, b]` tuple. Where a count is
 given at full intensity, it scales down as the effect eases out.
 
@@ -205,8 +210,8 @@ npx skills add sekeidesign/shad-fx
 ```
 
 `use-shad-fx` covers placement, the stable-reference rule, anchors and cost.
-`create-shad-fx` covers the `DitherEffect` contract, the two shapes an effect
-takes, the `Painter`, reduced motion and parking. The CLI installs them wherever
+`create-shad-fx` covers the `FxEffect` contract, the two shapes an effect
+takes, the `Surface` it paints into, reduced motion and parking. The CLI installs them wherever
 each agent you use looks for skills.
 
 ## Reduced motion
@@ -237,7 +242,8 @@ The ordered-dither rendering — a low-resolution backing canvas scaled up
 pixelated, the Bayer threshold matrix, and filling every cell at one of two
 alpha tiers rather than leaving holes — derives from
 [dither-kit](https://github.com/Boring-Software-Inc/dither-kit) (MIT). The
-effects, the `Painter`, the frame loop and the reduced-motion handling are not.
+effects, the `Painter`'s single-blit design, the frame loop and the
+reduced-motion handling are not.
 See [NOTICE.md](NOTICE.md) for the full attribution.
 
 MIT © Piergiorgio Gonni

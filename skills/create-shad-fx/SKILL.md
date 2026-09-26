@@ -1,37 +1,39 @@
 ---
 name: create-shad-fx
-description: Write a new ordered-dither effect for shad-fx, the canvas effects library under components/shad-fx/dither, or change how an existing one simulates. Use this whenever the user wants a dithered or pixelated animation that the shipped set (fire, bolt, rings, fluid, beam, rain, snow) does not cover - stars, smoke, sparks, static, embers, matrix rain, aurora, waves, confetti, a scanline sweep - or asks to add, create, build or extend a DitherCanvas effect, even if they call it a shader, a particle system or a background animation. Also use it when an effect restarts or flickers on the ease-out, never parks when inactive, ignores reduced motion, or looks different at different sizes or seeds.
+description: Write a new effect for shad-fx, the canvas effects library under components/shad-fx, or change how an existing one simulates. Use this whenever the user wants a dithered or pixelated animation that the shipped set (fire, bolt, rings, fluid, beam, rain, snow) does not cover - stars, smoke, sparks, static, embers, matrix rain, aurora, waves, confetti, a scanline sweep - or asks to add, create, build or extend a DitherCanvas effect, even if they call it a shader, a particle system or a background animation. Also use it when an effect restarts or flickers on the ease-out, never parks when inactive, ignores reduced motion, or looks different at different sizes or seeds.
 ---
 
-# Writing a shad-fx dither effect
+# Writing a shad-fx effect
 
-An effect is a factory returning a `DitherEffect`: three methods the engine
-calls, and nothing else. Everything visible is painted through a `Painter`
-into a grid of cells. Read these before writing, in this order; they are short:
+An effect is a factory returning an `FxEffect`: three methods the engine
+calls, and nothing else. Everything visible is painted through a `Surface`
+into a grid of cells. The effect never knows which renderer draws those cells:
+the same effect runs on `DitherCanvas` today and on any renderer added later.
+Read these before writing, in this order; they are short:
 
-1. `components/shad-fx/dither/engine.ts` — the contract, the painter, the loop.
-2. `components/shad-fx/dither/effects/fire.ts` — a simulation with its own state.
-3. `components/shad-fx/dither/effects/snow.ts` — a scene driven by intensity,
-   with a built still frame for reduced motion. `beam.ts` is the same shape at its
+1. `components/shad-fx/engine.ts` — the contract, the `Surface`, the loop.
+2. `components/shad-fx/effects/fire.ts` — a simulation with its own state.
+3. `components/shad-fx/effects/snow.ts` — a scene driven by intensity, with a
+   built still frame for reduced motion. `beam.ts` is the same shape at its
    simplest.
-4. `components/shad-fx/dither/effects/particles.ts` — the shared particle helpers.
+4. `components/shad-fx/effects/particles.ts` — the shared particle helpers.
 
 ## The contract
 
 ```ts
-interface DitherEffect {
+interface FxEffect {
   resize(cols: number, rows: number, rand: () => number): void;
-  step(frame: DitherFrame): boolean;   // true when the painter holds a new frame
+  step(frame: FxFrame): boolean;       // true when the surface holds a new frame
   idle(): boolean;                     // true once nothing is left to animate
 }
 ```
 
-`DitherFrame` carries `px` (the painter), `cols`, `rows`, `t` (seconds since
+`FxFrame` carries `px` (the surface), `cols`, `rows`, `t` (seconds since
 start), `dt` (seconds since last frame, capped at 0.1 so a background tab does
 not jump), `intensity` (eased 0–1 from `active`), `reduced` and `rand`.
 
 The engine eases `intensity` toward 1 or 0, calls `step` on every animation
-frame, blits the painter when `step` returns true, and **parks the loop when
+frame, has the renderer present the surface when `step` returns true, and **parks the loop when
 intensity has settled AND `idle()` is true AND (the target is 0 OR motion is
 reduced)**. Two consequences shape every effect:
 
@@ -81,15 +83,18 @@ or the still frame never clears on ease-out. snow.ts has it right.
 
 ## Painting
 
-The painter writes into a `Uint32Array` and the engine blits once per frame,
-so per-cell work is cheap and per-cell allocation is not. Start every paint
-with `px.clear()`. Then:
+`px` is a `Surface`, and these four calls are the whole of it. Paint through
+nothing else, and import nothing from a renderer folder, or the effect only
+works on that renderer. Each renderer writes cells into a buffer and presents
+once per frame, so per-cell work is cheap and per-cell allocation is not.
+Start every paint with `px.clear()`. Then:
 
-- `px.dither(x, y, density, color, gain = 1)` — the signature look. Every cell
-  in range is painted at one of two alpha tiers; the Bayer threshold decides
-  which. Use it for fields and gradients: heat, glow, a fading band. Density
+- `px.dither(x, y, density, color, gain = 1)` — a field sample. The dither
+  renderer paints every cell in range at one of two alpha tiers and lets the
+  Bayer threshold decide which; another renderer maps density its own way. Use
+  it for fields and gradients: heat, glow, a fading band. Density
   is 0–1; shape it with a power (`h ** 0.85`) rather than a threshold.
-- `px.blend(x, y, color, alpha)` — a solid source-over pixel. Use it for
+- `px.blend(x, y, color, alpha)` — a solid source-over cell. Use it for
   strokes, points and surfaces that must read as continuous. A streak dithered
   end to end breaks into dots below the threshold; rain blends the near part
   of each streak and dithers only the tail.
@@ -97,8 +102,8 @@ with `px.clear()`. Then:
   flare in with `arms` (0–1). Pair with `twinkle(t, phase, hz)` and `arms(tw)`
   from `particles.ts` for a wink that flashes rather than pulses; `hz` is the
   per-particle wink speed.
-- `px.inside(x, y)` is checked for you in every write; drawing off-grid is a
-  no-op, so let particles fly past the edges and cull them later.
+- Drawing off-grid is a no-op in every call, so let particles fly past the
+  edges and cull them later.
 
 The `gain` argument on `dither` exists for reduced motion: pass `intensity`
 there so the still frame can still fade in and out.
@@ -159,7 +164,7 @@ export function embers({
   color: colorInput = [252, 187, 0],
   count = 24,
   speed = 0.2,
-}: EmberOptions = {}): DitherEffect { … }
+}: EmberOptions = {}): FxEffect { … }
 ```
 
 Every option optional with a default, `RgbInput` for any colour, a one-line
@@ -169,9 +174,10 @@ JSDoc is the consumer's documentation; there is no other.
 ## Wiring it in
 
 In a project that installed shad-fx: write
-`components/shad-fx/dither/effects/<name>.ts`, importing from `../engine` and
-`./particles`, and add `export { <name>, type <Name>Options } from "./effects/<name>";`
-to `components/shad-fx/dither/index.ts`. Then use it like any other:
+`components/shad-fx/effects/<name>.ts`, importing only from `../engine` and
+`./particles`. If `components/shad-fx/index.ts` exists (the full library was
+installed), add `export { <name>, type <Name>Options } from "./effects/<name>";`
+there; otherwise import the effect from its file. Then use it like any other:
 `<DitherCanvas effect={useMemo(() => embers(), [])} />`.
 
 To contribute it upstream, the repo's AGENTS.md at
@@ -180,13 +186,14 @@ rebuild; the effect file itself is identical.
 
 ## Before calling it done
 
-Most of this can be checked without a browser. `Painter` needs only a global
-`ImageData`, so an effect runs in Node under `npx tsx`:
+Most of this can be checked without a browser. The dither renderer's `Painter`
+needs only a global `ImageData`, so an effect runs in Node under `npx tsx`:
 
 ```ts
 // scratch/smoke.mts — npx tsx scratch/smoke.mts
-import { Painter, seededRandom } from "../components/shad-fx/dither/engine";
-import { stars as effect } from "../components/shad-fx/dither/effects/stars";
+import { seededRandom } from "../components/shad-fx/engine";
+import { Painter } from "../components/shad-fx/dither/painter";
+import { stars as effect } from "../components/shad-fx/effects/stars";
 
 class ImageData {
   data: Uint8ClampedArray;
