@@ -24,240 +24,58 @@
 			]
 		},
 		{
-			"name": "shad-fx-dither-engine",
+			"name": "shad-fx-engine",
 			"type": "registry:lib",
-			"title": "shad-fx: dither engine",
-			"description": "Bayer-dithered canvas loop, seeded RNG and the colour helpers every effect builds on.",
+			"title": "shad-fx: engine",
+			"description": "The frame loop, the Surface and FxEffect contracts, seeded RNG and the colour helpers every renderer and effect builds on.",
 			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
 			"categories": [
 				"shad-fx",
-				"dither",
 				"canvas"
 			],
 			"version": "0.1.0",
 			"files": [
 				{
-					"path": "registry/shad-fx/dither/engine.ts",
+					"path": "registry/shad-fx/engine.ts",
 					"type": "registry:lib",
-					"target": "@components/shad-fx/dither/engine.ts"
+					"target": "@components/shad-fx/engine.ts"
 				},
 				{
-					"path": "registry/shad-fx/dither/effects/particles.ts",
+					"path": "registry/shad-fx/effects/particles.ts",
 					"type": "registry:lib",
-					"target": "@components/shad-fx/dither/effects/particles.ts"
-				}
-			],
-			"docs": "The ordered-dither rendering derives from dither-kit (MIT, https://github.com/Boring-Software-Inc/dither-kit). See https://github.com/sekeidesign/shad-fx/blob/main/NOTICE.md"
-		},
-		{
-			"name": "shad-fx-dither-canvas",
-			"type": "registry:ui",
-			"title": "shad-fx: dither canvas",
-			"description": "Fills its positioned parent with a pixelated canvas running a dither effect.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-			"categories": [
-				"shad-fx",
-				"dither",
-				"canvas"
-			],
-			"version": "0.1.0",
-			"docs": "Pair it with one effect: `<DitherCanvas effect={fx} />`. Build the effect once (useMemo or module scope) - a new reference restarts the simulation.",
-			"registryDependencies": [
-				"sekeidesign/shad-fx/shad-fx-dither-engine",
-				"sekeidesign/shad-fx/use-prefers-reduced-motion",
-				"utils"
-			],
-			"files": [
-				{
-					"path": "registry/shad-fx/dither/dither-canvas.tsx",
-					"type": "registry:ui",
-					"target": "@components/shad-fx/dither/dither-canvas.tsx"
-				}
-			]
-		},
-		{
-			"name": "shad-fx-dither-fire",
-			"type": "registry:lib",
-			"title": "shad-fx: dither fire",
-			"description": "Rising flame front with embers.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-			"categories": [
-				"shad-fx",
-				"dither",
-				"effects"
-			],
-			"version": "0.1.0",
-			"registryDependencies": [
-				"sekeidesign/shad-fx/shad-fx-dither-canvas"
-			],
-			"files": [
-				{
-					"path": "registry/shad-fx/dither/effects/fire.ts",
-					"type": "registry:lib",
-					"target": "@components/shad-fx/dither/effects/fire.ts"
-				}
-			]
-		},
-		{
-			"name": "shad-fx-dither-rings",
-			"type": "registry:lib",
-			"title": "shad-fx: dither rings",
-			"description": "Concentric rings pulsing out from an anchor.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-			"categories": [
-				"shad-fx",
-				"dither",
-				"effects"
-			],
-			"version": "0.1.0",
-			"registryDependencies": [
-				"sekeidesign/shad-fx/shad-fx-dither-canvas"
-			],
-			"files": [
-				{
-					"path": "registry/shad-fx/dither/effects/rings.ts",
-					"type": "registry:lib",
-					"target": "@components/shad-fx/dither/effects/rings.ts"
-				}
-			]
-		},
-		{
-			"name": "shad-fx-dither-beam",
-			"type": "registry:lib",
-			"title": "shad-fx: dither beam",
-			"description": "Directional beam with drifting motes.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-			"categories": [
-				"shad-fx",
-				"dither",
-				"effects"
-			],
-			"version": "0.1.0",
-			"registryDependencies": [
-				"sekeidesign/shad-fx/shad-fx-dither-canvas"
-			],
-			"files": [
-				{
-					"path": "registry/shad-fx/dither/effects/beam.ts",
-					"type": "registry:lib",
-					"target": "@components/shad-fx/dither/effects/beam.ts"
-				}
-			]
-		},
-		{
-			"name": "shad-fx-dither-bolt",
-			"type": "registry:lib",
-			"title": "shad-fx: dither bolt",
-			"description": "Intermittent lightning arcs on a randomised interval.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-			"categories": [
-				"shad-fx",
-				"dither",
-				"effects"
-			],
-			"version": "0.1.0",
-			"registryDependencies": [
-				"sekeidesign/shad-fx/shad-fx-dither-canvas"
-			],
-			"files": [
-				{
-					"path": "registry/shad-fx/dither/effects/bolt.ts",
-					"type": "registry:lib",
-					"target": "@components/shad-fx/dither/effects/bolt.ts"
-				}
-			]
-		},
-		{
-			"name": "shad-fx-dither-fluid",
-			"type": "registry:lib",
-			"title": "shad-fx: dither fluid",
-			"description": "Sloshing liquid level with rising bubbles.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-			"categories": [
-				"shad-fx",
-				"dither",
-				"effects"
-			],
-			"version": "0.1.0",
-			"registryDependencies": [
-				"sekeidesign/shad-fx/shad-fx-dither-canvas"
-			],
-			"files": [
-				{
-					"path": "registry/shad-fx/dither/effects/fluid.ts",
-					"type": "registry:lib",
-					"target": "@components/shad-fx/dither/effects/fluid.ts"
-				}
-			]
-		},
-		{
-			"name": "shad-fx-dither-rain",
-			"type": "registry:lib",
-			"title": "shad-fx: dither rain",
-			"description": "Slanted streaks of rain, splashing on the floor.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-			"categories": [
-				"shad-fx",
-				"dither",
-				"effects"
-			],
-			"version": "0.1.0",
-			"registryDependencies": [
-				"sekeidesign/shad-fx/shad-fx-dither-canvas"
-			],
-			"files": [
-				{
-					"path": "registry/shad-fx/dither/effects/rain.ts",
-					"type": "registry:lib",
-					"target": "@components/shad-fx/dither/effects/rain.ts"
-				}
-			]
-		},
-		{
-			"name": "shad-fx-dither-snow",
-			"type": "registry:lib",
-			"title": "shad-fx: dither snow",
-			"description": "Drifting flakes settling into a drift along the floor.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-			"categories": [
-				"shad-fx",
-				"dither",
-				"effects"
-			],
-			"version": "0.1.0",
-			"registryDependencies": [
-				"sekeidesign/shad-fx/shad-fx-dither-canvas"
-			],
-			"files": [
-				{
-					"path": "registry/shad-fx/dither/effects/snow.ts",
-					"type": "registry:lib",
-					"target": "@components/shad-fx/dither/effects/snow.ts"
+					"target": "@components/shad-fx/effects/particles.ts"
 				}
 			]
 		},
 		{
 			"name": "shad-fx-dither",
 			"type": "registry:ui",
-			"title": "shad-fx: dither",
-			"description": "The dither canvas, every dither effect, and a barrel that re-exports them.",
+			"title": "shad-fx: dither renderer",
+			"description": "DitherCanvas: fills its positioned parent with a pixelated canvas that draws any effect as Bayer-dithered cells.",
 			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
 			"categories": [
 				"shad-fx",
-				"dither"
+				"dither",
+				"canvas"
 			],
 			"version": "0.1.0",
-			"docs": "Everything imports from `@/components/shad-fx/dither`. Working with an agent? `npx skills add sekeidesign/shad-fx` installs agent skills for setting the effects up and writing new ones.",
+			"docs": "Pair it with any effect: `<DitherCanvas effect={fx} />`. Build the effect once (useMemo or module scope) - a new reference restarts the simulation. The ordered-dither rendering derives from dither-kit (MIT, https://github.com/Boring-Software-Inc/dither-kit). See https://github.com/sekeidesign/shad-fx/blob/main/NOTICE.md",
 			"registryDependencies": [
-				"sekeidesign/shad-fx/shad-fx-dither-fire",
-				"sekeidesign/shad-fx/shad-fx-dither-rings",
-				"sekeidesign/shad-fx/shad-fx-dither-beam",
-				"sekeidesign/shad-fx/shad-fx-dither-bolt",
-				"sekeidesign/shad-fx/shad-fx-dither-fluid",
-				"sekeidesign/shad-fx/shad-fx-dither-rain",
-				"sekeidesign/shad-fx/shad-fx-dither-snow"
+				"sekeidesign/shad-fx/shad-fx-engine",
+				"sekeidesign/shad-fx/use-prefers-reduced-motion",
+				"utils"
 			],
 			"files": [
+				{
+					"path": "registry/shad-fx/dither/painter.ts",
+					"type": "registry:lib",
+					"target": "@components/shad-fx/dither/painter.ts"
+				},
+				{
+					"path": "registry/shad-fx/dither/dither-canvas.tsx",
+					"type": "registry:ui",
+					"target": "@components/shad-fx/dither/dither-canvas.tsx"
+				},
 				{
 					"path": "registry/shad-fx/dither/index.ts",
 					"type": "registry:lib",
@@ -266,10 +84,171 @@
 			]
 		},
 		{
+			"name": "shad-fx-fire",
+			"type": "registry:lib",
+			"title": "shad-fx: fire",
+			"description": "Rising flame front with embers.",
+			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"categories": [
+				"shad-fx",
+				"effects"
+			],
+			"version": "0.1.0",
+			"docs": "Runs on any renderer. Needs one to show: `npx shadcn@latest add @sekei/shad-fx-dither`, then `<DitherCanvas effect={fire()} />`.",
+			"registryDependencies": [
+				"sekeidesign/shad-fx/shad-fx-engine"
+			],
+			"files": [
+				{
+					"path": "registry/shad-fx/effects/fire.ts",
+					"type": "registry:lib",
+					"target": "@components/shad-fx/effects/fire.ts"
+				}
+			]
+		},
+		{
+			"name": "shad-fx-rings",
+			"type": "registry:lib",
+			"title": "shad-fx: rings",
+			"description": "Concentric rings pulsing out from an anchor.",
+			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"categories": [
+				"shad-fx",
+				"effects"
+			],
+			"version": "0.1.0",
+			"docs": "Runs on any renderer. Needs one to show: `npx shadcn@latest add @sekei/shad-fx-dither`, then `<DitherCanvas effect={rings()} />`.",
+			"registryDependencies": [
+				"sekeidesign/shad-fx/shad-fx-engine"
+			],
+			"files": [
+				{
+					"path": "registry/shad-fx/effects/rings.ts",
+					"type": "registry:lib",
+					"target": "@components/shad-fx/effects/rings.ts"
+				}
+			]
+		},
+		{
+			"name": "shad-fx-beam",
+			"type": "registry:lib",
+			"title": "shad-fx: beam",
+			"description": "Directional beam with drifting motes.",
+			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"categories": [
+				"shad-fx",
+				"effects"
+			],
+			"version": "0.1.0",
+			"docs": "Runs on any renderer. Needs one to show: `npx shadcn@latest add @sekei/shad-fx-dither`, then `<DitherCanvas effect={beam()} />`.",
+			"registryDependencies": [
+				"sekeidesign/shad-fx/shad-fx-engine"
+			],
+			"files": [
+				{
+					"path": "registry/shad-fx/effects/beam.ts",
+					"type": "registry:lib",
+					"target": "@components/shad-fx/effects/beam.ts"
+				}
+			]
+		},
+		{
+			"name": "shad-fx-bolt",
+			"type": "registry:lib",
+			"title": "shad-fx: bolt",
+			"description": "Intermittent lightning arcs on a randomised interval.",
+			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"categories": [
+				"shad-fx",
+				"effects"
+			],
+			"version": "0.1.0",
+			"docs": "Runs on any renderer. Needs one to show: `npx shadcn@latest add @sekei/shad-fx-dither`, then `<DitherCanvas effect={bolt()} />`.",
+			"registryDependencies": [
+				"sekeidesign/shad-fx/shad-fx-engine"
+			],
+			"files": [
+				{
+					"path": "registry/shad-fx/effects/bolt.ts",
+					"type": "registry:lib",
+					"target": "@components/shad-fx/effects/bolt.ts"
+				}
+			]
+		},
+		{
+			"name": "shad-fx-fluid",
+			"type": "registry:lib",
+			"title": "shad-fx: fluid",
+			"description": "Sloshing liquid level with rising bubbles.",
+			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"categories": [
+				"shad-fx",
+				"effects"
+			],
+			"version": "0.1.0",
+			"docs": "Runs on any renderer. Needs one to show: `npx shadcn@latest add @sekei/shad-fx-dither`, then `<DitherCanvas effect={fluid()} />`.",
+			"registryDependencies": [
+				"sekeidesign/shad-fx/shad-fx-engine"
+			],
+			"files": [
+				{
+					"path": "registry/shad-fx/effects/fluid.ts",
+					"type": "registry:lib",
+					"target": "@components/shad-fx/effects/fluid.ts"
+				}
+			]
+		},
+		{
+			"name": "shad-fx-rain",
+			"type": "registry:lib",
+			"title": "shad-fx: rain",
+			"description": "Slanted streaks of rain, splashing on the floor.",
+			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"categories": [
+				"shad-fx",
+				"effects"
+			],
+			"version": "0.1.0",
+			"docs": "Runs on any renderer. Needs one to show: `npx shadcn@latest add @sekei/shad-fx-dither`, then `<DitherCanvas effect={rain()} />`.",
+			"registryDependencies": [
+				"sekeidesign/shad-fx/shad-fx-engine"
+			],
+			"files": [
+				{
+					"path": "registry/shad-fx/effects/rain.ts",
+					"type": "registry:lib",
+					"target": "@components/shad-fx/effects/rain.ts"
+				}
+			]
+		},
+		{
+			"name": "shad-fx-snow",
+			"type": "registry:lib",
+			"title": "shad-fx: snow",
+			"description": "Drifting flakes settling into a drift along the floor.",
+			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"categories": [
+				"shad-fx",
+				"effects"
+			],
+			"version": "0.1.0",
+			"docs": "Runs on any renderer. Needs one to show: `npx shadcn@latest add @sekei/shad-fx-dither`, then `<DitherCanvas effect={snow()} />`.",
+			"registryDependencies": [
+				"sekeidesign/shad-fx/shad-fx-engine"
+			],
+			"files": [
+				{
+					"path": "registry/shad-fx/effects/snow.ts",
+					"type": "registry:lib",
+					"target": "@components/shad-fx/effects/snow.ts"
+				}
+			]
+		},
+		{
 			"name": "shad-fx",
 			"type": "registry:ui",
 			"title": "shad-fx",
-			"description": "Every shad-fx renderer and effect, behind one barrel.",
+			"description": "The dither renderer, every effect, and a barrel that re-exports them.",
 			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
 			"categories": [
 				"shad-fx"
@@ -277,7 +256,14 @@
 			"version": "0.1.0",
 			"docs": "Everything imports from `@/components/shad-fx`. Working with an agent? `npx skills add sekeidesign/shad-fx` installs agent skills for setting the effects up and writing new ones.",
 			"registryDependencies": [
-				"sekeidesign/shad-fx/shad-fx-dither"
+				"sekeidesign/shad-fx/shad-fx-dither",
+				"sekeidesign/shad-fx/shad-fx-fire",
+				"sekeidesign/shad-fx/shad-fx-rings",
+				"sekeidesign/shad-fx/shad-fx-beam",
+				"sekeidesign/shad-fx/shad-fx-bolt",
+				"sekeidesign/shad-fx/shad-fx-fluid",
+				"sekeidesign/shad-fx/shad-fx-rain",
+				"sekeidesign/shad-fx/shad-fx-snow"
 			],
 			"files": [
 				{

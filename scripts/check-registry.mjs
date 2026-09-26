@@ -1,7 +1,7 @@
 // Fails when r/ is stale against registry.json and the files it
 // points at. Offline and dependency-free on purpose: `registry:build` shells
 // out to npx, so this is the one that is cheap enough to run on every commit.
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
@@ -50,6 +50,13 @@ for (const item of registry.items) {
 			stale.push(`${item.name}: ${file.path} has changed since the last build`);
 		}
 	}
+}
+
+// `shadcn build` only ever writes, so an item that is renamed or removed
+// leaves its old JSON behind, and the proxy keeps serving it.
+const expected = new Set(["registry.json", ...registry.items.map((i) => `${i.name}.json`)]);
+for (const file of readdirSync(OUT)) {
+	if (!expected.has(file)) stale.push(`r/${file} is not built from any item; delete it`);
 }
 
 if (stale.length > 0) {
