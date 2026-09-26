@@ -26,9 +26,9 @@ registry/shad-fx/      the files themselves
   index.ts             top-level barrel, re-exports every renderer
   use-prefers-reduced-motion.ts   shared across renderers
   dither/              the ordered-dither renderer: engine, canvas, effects
-  skills/              SKILL.md per skill item, installed to .claude/skills/
 r/                     built output, committed
 scripts/check-registry.mjs
+skills/                agent skills, installed with `npx skills add`, not shadcn
 ```
 
 `r` is shadcn's own name for built registry output — `shadcn build` defaults to
@@ -62,9 +62,9 @@ Leave `"utils"` bare. It resolves against shadcn/ui.
 
 ## Skills
 
-`registry/shad-fx/skills/*/SKILL.md` ship as `registry:file` items whose
-`target` is `~/.claude/skills/<dir>/SKILL.md`; the CLI reads `~/` as the
-consumer's project root. They describe the API a second time, in prose, so an
+`skills/*/SKILL.md` are not registry items. They install with
+`npx skills add sekeidesign/shad-fx`, which finds them by folder, so keep the
+folder name and the frontmatter `name` equal. They describe the API a second time, in prose, so an
 API change (an option renamed, a default moved, a contract method added) is
 not done until both skills say the same thing as the code. Keep them pointing
 at the JSDoc for detail rather than restating every table.
@@ -82,9 +82,7 @@ export the same symbol name, re-export them under namespaces there instead of
 ## Item names
 
 `shad-fx`, `shad-fx-<renderer>`, `shad-fx-<renderer>-<effect>`,
-`use-prefers-reduced-motion`, and the two `registry:file` skills `use-fx-skill`
-and `create-fx-skill`, whose `SKILL.md` files sit under
-`registry/shad-fx/skills/`. They are the publisher namespace's names
+and `use-prefers-reduced-motion`. They are the publisher namespace's names
 (`@sekei/shad-fx-dither-fire`), not the repo's, so the `shad-fx-` prefix stays
 even though `sekeidesign/shad-fx/shad-fx-dither-fire` stutters. Renaming an item
 breaks every install command already written down.

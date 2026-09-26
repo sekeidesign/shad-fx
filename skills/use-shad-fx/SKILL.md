@@ -1,5 +1,5 @@
 ---
-name: shad-fx
+name: use-shad-fx
 description: Set up and use shad-fx, whose ordered-dither canvas effects are installed under components/shad-fx/dither (DitherCanvas plus fire, bolt, rings, fluid, beam, rain, snow). Use this whenever the user wants a pixelated, dithered, retro or 8-bit animated background or accent on a card, hero, button, avatar or section - flames, lightning, sonar or ripple rings, a spotlight or god-ray beam, a liquid or water fill, rain or snow - or mentions DitherCanvas, shad-fx or @sekei, even if they don't name the library. Also use it when an existing DitherCanvas restarts, flickers, does not show, sits on top of the content, or costs too much.
 ---
 
@@ -138,6 +138,6 @@ Read that file before guessing at an option name.
 
 ## Extending
 
-To write a new effect, use the `shad-fx-new-effect` skill if it is installed
-(`npx shadcn@latest add @sekei/create-fx-skill`), or copy the shape of
+To write a new effect, use the `create-shad-fx` skill if it is installed
+(`npx skills add sekeidesign/shad-fx --skill create-shad-fx`), or copy the shape of
 `effects/fire.ts` and re-export from `components/shad-fx/dither/index.ts`.
