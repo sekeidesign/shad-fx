@@ -237,46 +237,6 @@
 			]
 		},
 		{
-			"name": "use-fx-skill",
-			"type": "registry:file",
-			"title": "shad-fx: usage skill",
-			"description": "Agent skill: install, place and drive DitherCanvas and the effects correctly.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-			"categories": [
-				"shad-fx",
-				"skills"
-			],
-			"version": "0.1.0",
-			"docs": "Lands in .claude/skills/shad-fx/ so Claude Code picks it up in this project. Pair with create-fx-skill to write new effects.",
-			"files": [
-				{
-					"path": "registry/shad-fx/skills/shad-fx/SKILL.md",
-					"type": "registry:file",
-					"target": "~/.claude/skills/shad-fx/SKILL.md"
-				}
-			]
-		},
-		{
-			"name": "create-fx-skill",
-			"type": "registry:file",
-			"title": "shad-fx: effect authoring skill",
-			"description": "Agent skill: write a new effect against the engine contract, or rework how one simulates.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-			"categories": [
-				"shad-fx",
-				"skills"
-			],
-			"version": "0.1.0",
-			"docs": "Lands in .claude/skills/shad-fx-new-effect/. Covers the DitherEffect contract, the two effect shapes, the Painter, reduced motion and parking.",
-			"files": [
-				{
-					"path": "registry/shad-fx/skills/shad-fx-new-effect/SKILL.md",
-					"type": "registry:file",
-					"target": "~/.claude/skills/shad-fx-new-effect/SKILL.md"
-				}
-			]
-		},
-		{
 			"name": "shad-fx-dither",
 			"type": "registry:ui",
 			"title": "shad-fx: dither",
@@ -287,7 +247,7 @@
 				"dither"
 			],
 			"version": "0.1.0",
-			"docs": "Everything imports from `@/components/shad-fx/dither`. Working with an agent? `npx shadcn@latest add @sekei/use-fx-skill` installs a Claude Code skill for setting the effects up correctly.",
+			"docs": "Everything imports from `@/components/shad-fx/dither`. Working with an agent? `npx skills add sekeidesign/shad-fx` installs agent skills for setting the effects up and writing new ones.",
 			"registryDependencies": [
 				"sekeidesign/shad-fx/shad-fx-dither-fire",
 				"sekeidesign/shad-fx/shad-fx-dither-rings",
@@ -315,7 +275,7 @@
 				"shad-fx"
 			],
 			"version": "0.1.0",
-			"docs": "Everything imports from `@/components/shad-fx`. Working with an agent? `npx shadcn@latest add @sekei/use-fx-skill` installs a Claude Code skill for setting the effects up correctly.",
+			"docs": "Everything imports from `@/components/shad-fx`. Working with an agent? `npx skills add sekeidesign/shad-fx` installs agent skills for setting the effects up and writing new ones.",
 			"registryDependencies": [
 				"sekeidesign/shad-fx/shad-fx-dither"
 			],

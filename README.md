@@ -76,8 +76,6 @@ Files land under `components/shad-fx/` and `hooks/`, following your
 | `shad-fx-dither-snow` | Canvas |
 | `shad-fx-dither-engine` | Nothing — painter, seeded RNG, colour helpers |
 | `use-prefers-reduced-motion` | Nothing |
-| `use-fx-skill` | Nothing — a Claude Code skill, see below |
-| `create-fx-skill` | Nothing — a Claude Code skill, see below |
 
 ## Usage
 
@@ -199,18 +197,17 @@ moves without being rebuilt and losing what it has already simulated.
 
 ## Agent skills
 
-Two opt-in items install [skills](https://code.claude.com/docs/en/skills)
-into `.claude/skills/` so Claude Code knows the library the way this README
-does, from inside your project:
+Two [agent skills](https://agentskills.io) teach your coding agent the library
+the way this README does, from inside your project:
 
 ```bash
-npx shadcn@latest add @sekei/use-fx-skill      # set up and drive the effects
-npx shadcn@latest add @sekei/create-fx-skill   # write a new effect
+npx skills add sekeidesign/shad-fx
 ```
 
-The first covers placement, the stable-reference rule, anchors and cost. The
-second covers the `DitherEffect` contract, the two shapes an effect takes, the
-`Painter`, reduced motion and parking. Neither is pulled in by `shad-fx`.
+`use-shad-fx` covers placement, the stable-reference rule, anchors and cost.
+`create-shad-fx` covers the `DitherEffect` contract, the two shapes an effect
+takes, the `Painter`, reduced motion and parking. The CLI installs them wherever
+each agent you use looks for skills.
 
 ## Reduced motion
 

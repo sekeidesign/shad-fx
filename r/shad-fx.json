@@ -15,7 +15,7 @@
       "target": "@components/shad-fx/index.ts"
     }
   ],
-  "docs": "Everything imports from `@/components/shad-fx`. Working with an agent? `npx shadcn@latest add @sekei/use-fx-skill` installs a Claude Code skill for setting the effects up correctly.",
+  "docs": "Everything imports from `@/components/shad-fx`. Working with an agent? `npx skills add sekeidesign/shad-fx` installs agent skills for setting the effects up and writing new ones.",
   "categories": [
     "shad-fx"
   ],

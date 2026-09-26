@@ -1,5 +1,5 @@
 ---
-name: shad-fx-new-effect
+name: create-shad-fx
 description: Write a new ordered-dither effect for shad-fx, the canvas effects library under components/shad-fx/dither, or change how an existing one simulates. Use this whenever the user wants a dithered or pixelated animation that the shipped set (fire, bolt, rings, fluid, beam, rain, snow) does not cover - stars, smoke, sparks, static, embers, matrix rain, aurora, waves, confetti, a scanline sweep - or asks to add, create, build or extend a DitherCanvas effect, even if they call it a shader, a particle system or a background animation. Also use it when an effect restarts or flickers on the ease-out, never parks when inactive, ignores reduced motion, or looks different at different sizes or seeds.
 ---
 
