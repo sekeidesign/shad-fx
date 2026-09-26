@@ -1,20 +1,20 @@
 ---
-name: dither-fx-new-effect
-description: Write a new effect for dither-fx, the ordered-dither canvas library under components/dither-fx, or change how an existing one simulates. Use this whenever the user wants a dithered or pixelated animation that the shipped set (fire, bolt, rings, fluid, beam, rain, snow) does not cover - stars, smoke, sparks, static, embers, matrix rain, aurora, waves, confetti, a scanline sweep - or asks to add, create, build or extend a DitherCanvas effect, even if they call it a shader, a particle system or a background animation. Also use it when an effect restarts or flickers on the ease-out, never parks when inactive, ignores reduced motion, or looks different at different sizes or seeds.
+name: shad-fx-new-effect
+description: Write a new ordered-dither effect for shad-fx, the canvas effects library under components/shad-fx/dither, or change how an existing one simulates. Use this whenever the user wants a dithered or pixelated animation that the shipped set (fire, bolt, rings, fluid, beam, rain, snow) does not cover - stars, smoke, sparks, static, embers, matrix rain, aurora, waves, confetti, a scanline sweep - or asks to add, create, build or extend a DitherCanvas effect, even if they call it a shader, a particle system or a background animation. Also use it when an effect restarts or flickers on the ease-out, never parks when inactive, ignores reduced motion, or looks different at different sizes or seeds.
 ---
 
-# Writing a dither-fx effect
+# Writing a shad-fx dither effect
 
 An effect is a factory returning a `DitherEffect`: three methods the engine
 calls, and nothing else. Everything visible is painted through a `Painter`
 into a grid of cells. Read these before writing, in this order; they are short:
 
-1. `components/dither-fx/engine.ts` — the contract, the painter, the loop.
-2. `components/dither-fx/effects/fire.ts` — a simulation with its own state.
-3. `components/dither-fx/effects/snow.ts` — a scene driven by intensity, with
-   a built still frame for reduced motion. `beam.ts` is the same shape at its
+1. `components/shad-fx/dither/engine.ts` — the contract, the painter, the loop.
+2. `components/shad-fx/dither/effects/fire.ts` — a simulation with its own state.
+3. `components/shad-fx/dither/effects/snow.ts` — a scene driven by intensity,
+   with a built still frame for reduced motion. `beam.ts` is the same shape at its
    simplest.
-4. `components/dither-fx/effects/particles.ts` — the shared particle helpers.
+4. `components/shad-fx/dither/effects/particles.ts` — the shared particle helpers.
 
 ## The contract
 
@@ -168,14 +168,14 @@ JSDoc is the consumer's documentation; there is no other.
 
 ## Wiring it in
 
-In a project that installed dither-fx: write
-`components/dither-fx/effects/<name>.ts`, importing from `../engine` and
+In a project that installed shad-fx: write
+`components/shad-fx/dither/effects/<name>.ts`, importing from `../engine` and
 `./particles`, and add `export { <name>, type <Name>Options } from "./effects/<name>";`
-to `components/dither-fx/index.ts`. Then use it like any other:
+to `components/shad-fx/dither/index.ts`. Then use it like any other:
 `<DitherCanvas effect={useMemo(() => embers(), [])} />`.
 
 To contribute it upstream, the repo's AGENTS.md at
-https://github.com/sekeidesign/dither-fx covers the registry item and the
+https://github.com/sekeidesign/shad-fx covers the registry item and the
 rebuild; the effect file itself is identical.
 
 ## Before calling it done
@@ -185,8 +185,8 @@ Most of this can be checked without a browser. `Painter` needs only a global
 
 ```ts
 // scratch/smoke.mts — npx tsx scratch/smoke.mts
-import { Painter, seededRandom } from "../components/dither-fx/engine";
-import { stars as effect } from "../components/dither-fx/effects/stars";
+import { Painter, seededRandom } from "../components/shad-fx/dither/engine";
+import { stars as effect } from "../components/shad-fx/dither/effects/stars";
 
 class ImageData {
   data: Uint8ClampedArray;

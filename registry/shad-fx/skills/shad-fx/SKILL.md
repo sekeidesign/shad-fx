@@ -1,26 +1,27 @@
 ---
-name: dither-fx
-description: Set up and use dither-fx, the ordered-dither canvas effects installed under components/dither-fx (DitherCanvas plus fire, bolt, rings, fluid, beam, rain, snow). Use this whenever the user wants a pixelated, dithered, retro or 8-bit animated background or accent on a card, hero, button, avatar or section - flames, lightning, sonar or ripple rings, a spotlight or god-ray beam, a liquid or water fill, rain or snow - or mentions DitherCanvas, dither-fx or @sekei, even if they don't name the library. Also use it when an existing DitherCanvas restarts, flickers, does not show, sits on top of the content, or costs too much.
+name: shad-fx
+description: Set up and use shad-fx, whose ordered-dither canvas effects are installed under components/shad-fx/dither (DitherCanvas plus fire, bolt, rings, fluid, beam, rain, snow). Use this whenever the user wants a pixelated, dithered, retro or 8-bit animated background or accent on a card, hero, button, avatar or section - flames, lightning, sonar or ripple rings, a spotlight or god-ray beam, a liquid or water fill, rain or snow - or mentions DitherCanvas, shad-fx or @sekei, even if they don't name the library. Also use it when an existing DitherCanvas restarts, flickers, does not show, sits on top of the content, or costs too much.
 ---
 
-# Using dither-fx
+# Using shad-fx
 
-dither-fx paints an effect as Bayer-thresholded cells into a low-resolution
-canvas that is scaled up without smoothing. One `DitherCanvas` runs one effect.
-The files live in the project, under `components/dither-fx/`, so read them when
-in doubt: every option is documented where it is declared.
+shad-fx's dither renderer paints an effect as Bayer-thresholded cells into a
+low-resolution canvas that is scaled up without smoothing. One `DitherCanvas`
+runs one effect. The files live in the project, under
+`components/shad-fx/dither/`, so read them when in doubt: every option is
+documented where it is declared.
 
 ## Install, if it is not there yet
 
-Look for `components/dither-fx/dither-canvas.tsx`. If it is missing:
+Look for `components/shad-fx/dither/dither-canvas.tsx`. If it is missing:
 
 ```bash
-npx shadcn@latest add @sekei/dither-fx          # canvas + every effect + barrel
-npx shadcn@latest add @sekei/dither-fx-fire     # canvas + one effect
+npx shadcn@latest add @sekei/shad-fx                # everything
+npx shadcn@latest add @sekei/shad-fx-dither-fire    # dither canvas + one effect
 ```
 
 If `@sekei` does not resolve, the GitHub form needs no config:
-`npx shadcn@latest add sekeidesign/dither-fx/dither-fx`. Nothing else to set up:
+`npx shadcn@latest add sekeidesign/shad-fx/shad-fx`. Nothing else to set up:
 the hook and `cn` come along, and there is no npm dependency.
 
 ## The shape that works
@@ -28,7 +29,7 @@ the hook and `cn` come along, and there is no npm dependency.
 ```tsx
 "use client";
 
-import { DitherCanvas, fire } from "@/components/dither-fx";
+import { DitherCanvas, fire } from "@/components/shad-fx";
 import { useMemo } from "react";
 
 export function Card() {
@@ -132,11 +133,11 @@ or read the computed colour once and pass it in.
 | `snow` | Flakes drifting and settling into a drift | `settle` (`0` for none), `flakes` |
 
 Every option is optional. The full list with defaults and units is the JSDoc on
-each `<Name>Options` interface in `components/dither-fx/effects/<name>.ts`.
+each `<Name>Options` interface in `components/shad-fx/dither/effects/<name>.ts`.
 Read that file before guessing at an option name.
 
 ## Extending
 
-To write a new effect, use the `dither-fx-new-effect` skill if it is installed
+To write a new effect, use the `shad-fx-new-effect` skill if it is installed
 (`npx shadcn@latest add @sekei/create-fx-skill`), or copy the shape of
-`effects/fire.ts` and re-export from `components/dither-fx/index.ts`.
+`effects/fire.ts` and re-export from `components/shad-fx/dither/index.ts`.
