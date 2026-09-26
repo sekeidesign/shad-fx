@@ -144,8 +144,8 @@ stripped. Keep them in step.
 
 To submit, open a pull request against <https://github.com/shadcn-ui/ui> that
 appends this to `apps/v4/registry/directory.json`, then run
-`pnpm validate:registries` there. `logo` is a required inline SVG; swap the
-placeholder for the real mark before submitting.
+`pnpm validate:registries` there. `logo` is a required inline SVG. Keep
+`fill='var(--foreground)'` so it follows light and dark mode.
 
 ```json
 {
@@ -154,6 +154,6 @@ placeholder for the real mark before submitting.
 	"url": "https://www.sekei.xyz/registry/{name}.json",
 	"description": "Canvas effects for React, copied into your project as source. Starts with ordered dither: fire, lightning, sonar rings, a light beam, a sloshing fluid, rain and snow.",
 	"author": "Piergiorgio Gonni",
-	"logo": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='var(--foreground)'><rect width='32' height='32' rx='8' fill-opacity='.12'/><path d='M8 8h4v4H8zM20 8h4v4h-4zM14 14h4v4h-4zM8 20h4v4H8zM20 20h4v4h-4z'/></svg>"
+	"logo": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='var(--foreground)'><path d='M18 12H26V14H28V16H26V18H24V20H22V22H20V24H18V26H16V28H14V20H6V18H4V16H6V14H8V12H10V10H12V8H14V6H16V4H18V12Z'/></svg>"
 }
 ```
