@@ -1,27 +1,35 @@
-# dither-fx
+# shad-fx
 
-Ordered-dither canvas effects for React: fire, lightning, sonar rings, a light
-beam, a sloshing fluid, rain and snow, each painted as Bayer-thresholded cells
-over a pixelated canvas. Distributed through a [shadcn](https://ui.shadcn.com)
+Canvas effects for React, distributed through a [shadcn](https://ui.shadcn.com)
 registry — the files are copied into your project, not added as a dependency.
 
+The first renderer is ordered dither: fire, lightning, sonar rings, a light
+beam, a sloshing fluid, rain and snow, each painted as Bayer-thresholded cells
+over a pixelated canvas. More techniques, such as ASCII, will sit alongside it.
+
+> [!NOTE]
+> shad-fx is an independent project. It is not made, maintained or endorsed by
+> shadcn or the shadcn/ui project. It only uses the shadcn CLI and registry
+> format to install.
+
 <!-- TODO: drop demo.gif (or demo.png) in the repo root and uncomment:
-![dither-fx](demo.gif)
+![shad-fx](demo.gif)
 -->
 
 ```bash
-npx shadcn@latest add @sekei/dither-fx
+npx shadcn@latest add @sekei/shad-fx
 ```
 
-Docs, playground and gallery: [sekei.xyz/dither-fx](https://www.sekei.xyz/dither-fx)
+Docs, playground and gallery: [sekei.xyz/shad-fx](https://www.sekei.xyz/shad-fx)
 
 ## Install
 
-Take the whole library, or one effect:
+Take the whole library, one renderer, or one effect:
 
 ```bash
-npx shadcn@latest add @sekei/dither-fx        # canvas + every effect + barrel
-npx shadcn@latest add @sekei/dither-fx-fire   # canvas + fire only
+npx shadcn@latest add @sekei/shad-fx                # everything
+npx shadcn@latest add @sekei/shad-fx-dither         # dither canvas + every dither effect
+npx shadcn@latest add @sekei/shad-fx-dither-fire    # dither canvas + fire only
 ```
 
 Nothing to configure. `@sekei` is in the shadcn registry directory, so the CLI
@@ -46,26 +54,27 @@ This repo is also a registry on its own terms, so the `owner/repo/item` form
 works without touching any config:
 
 ```bash
-npx shadcn@latest add sekeidesign/dither-fx/dither-fx
+npx shadcn@latest add sekeidesign/shad-fx/shad-fx
 ```
 
-Files land under `components/dither-fx/` and `hooks/`, following your
+Files land under `components/shad-fx/` and `hooks/`, following your
 `components.json` aliases.
 
 ## Items
 
 | Item | Pulls in |
 | --- | --- |
-| `dither-fx` | Everything below, plus an `index.ts` barrel |
-| `dither-fx-canvas` | Engine, the reduced-motion hook, `utils` |
-| `dither-fx-fire` | Canvas |
-| `dither-fx-rings` | Canvas |
-| `dither-fx-beam` | Canvas |
-| `dither-fx-bolt` | Canvas |
-| `dither-fx-fluid` | Canvas |
-| `dither-fx-rain` | Canvas |
-| `dither-fx-snow` | Canvas |
-| `dither-fx-engine` | Nothing — painter, seeded RNG, colour helpers |
+| `shad-fx` | Every renderer below, plus a top-level `index.ts` barrel |
+| `shad-fx-dither` | Every dither item below, plus `dither/index.ts` |
+| `shad-fx-dither-canvas` | Engine, the reduced-motion hook, `utils` |
+| `shad-fx-dither-fire` | Canvas |
+| `shad-fx-dither-rings` | Canvas |
+| `shad-fx-dither-beam` | Canvas |
+| `shad-fx-dither-bolt` | Canvas |
+| `shad-fx-dither-fluid` | Canvas |
+| `shad-fx-dither-rain` | Canvas |
+| `shad-fx-dither-snow` | Canvas |
+| `shad-fx-dither-engine` | Nothing — painter, seeded RNG, colour helpers |
 | `use-prefers-reduced-motion` | Nothing |
 | `use-fx-skill` | Nothing — a Claude Code skill, see below |
 | `create-fx-skill` | Nothing — a Claude Code skill, see below |
@@ -76,7 +85,7 @@ The canvas fills its nearest positioned ancestor, so give the parent
 `relative`:
 
 ```tsx
-import { DitherCanvas, fire } from "@/components/dither-fx";
+import { DitherCanvas, fire } from "@/components/shad-fx";
 import { useMemo } from "react";
 
 export function Card() {
@@ -201,7 +210,7 @@ npx shadcn@latest add @sekei/create-fx-skill   # write a new effect
 
 The first covers placement, the stable-reference rule, anchors and cost. The
 second covers the `DitherEffect` contract, the two shapes an effect takes, the
-`Painter`, reduced motion and parking. Neither is pulled in by `dither-fx`.
+`Painter`, reduced motion and parking. Neither is pulled in by `shad-fx`.
 
 ## Reduced motion
 
@@ -221,7 +230,7 @@ capped at 640×400 cells, not a `fillRect` per cell.
 ## Contributing
 
 See [AGENTS.md](AGENTS.md). The short version: `registry.json` and
-`registry/dither-fx/` are the source, `r/` is generated and committed, and
+`registry/shad-fx/` are the source, `r/` is generated and committed, and
 `pnpm registry:build && pnpm registry:check` runs before every commit that
 touches either.
 

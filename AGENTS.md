@@ -22,8 +22,11 @@ reason to skip it.
 
 ```
 registry.json          source of truth, the build's input
-registry/dither-fx/    the files themselves
-registry/dither-fx/skills/  SKILL.md per skill item, installed to .claude/skills/
+registry/shad-fx/      the files themselves
+  index.ts             top-level barrel, re-exports every renderer
+  use-prefers-reduced-motion.ts   shared across renderers
+  dither/              the ordered-dither renderer: engine, canvas, effects
+  skills/              SKILL.md per skill item, installed to .claude/skills/
 r/                     built output, committed
 scripts/check-registry.mjs
 ```
@@ -32,22 +35,22 @@ scripts/check-registry.mjs
 `./public/r` and shadcn/ui serves its items at `ui.shadcn.com/r/<item>.json`.
 This repo is not a web app and has no `public/`, so it sits at the root.
 
-`registry/dither-fx/*` is not compiled here — no `tsconfig.json`, no
+`registry/shad-fx/*` is not compiled here — no `tsconfig.json`, no
 dependencies. The files keep the consumer's alias imports (`@/lib/utils`,
 `@/hooks/use-prefers-reduced-motion`), which resolve in the installing project,
 not in this one. Do not rewrite them to relative paths.
 
 ## Adding an effect
 
-1. Write `registry/dither-fx/effects/<name>.ts`, exporting a factory that
+1. Write `registry/shad-fx/dither/effects/<name>.ts`, exporting a factory that
    returns a `DitherEffect` and an `<Name>Options` interface. Copy the shape of
    `fire.ts`: `paint(frame)` per frame, `idle()` when nothing is changing, and a
    settled single frame under reduced motion.
-2. Re-export it from `registry/dither-fx/index.ts`.
+2. Re-export it from `registry/shad-fx/dither/index.ts`.
 3. Add an item to `registry.json`: `type: "registry:lib"`, `version`, a
-   `registryDependencies` of `["sekeidesign/dither-fx/dither-fx-canvas"]`, and a
-   file whose `target` is `@components/dither-fx/effects/<name>.ts`.
-4. Add it to the `dither-fx` aggregate item's `registryDependencies`.
+   `registryDependencies` of `["sekeidesign/shad-fx/shad-fx-dither-canvas"]`,
+   and a file whose `target` is `@components/shad-fx/dither/effects/<name>.ts`.
+4. Add it to the `shad-fx-dither` aggregate item's `registryDependencies`.
 5. Rebuild and check, as above.
 
 Registry dependencies stay in `owner/repo/item` shorthand. They resolve from the
@@ -59,29 +62,43 @@ Leave `"utils"` bare. It resolves against shadcn/ui.
 
 ## Skills
 
-`registry/dither-fx/skills/*/SKILL.md` ship as `registry:file` items whose
+`registry/shad-fx/skills/*/SKILL.md` ship as `registry:file` items whose
 `target` is `~/.claude/skills/<dir>/SKILL.md`; the CLI reads `~/` as the
 consumer's project root. They describe the API a second time, in prose, so an
 API change (an option renamed, a default moved, a contract method added) is
 not done until both skills say the same thing as the code. Keep them pointing
 at the JSDoc for detail rather than restating every table.
 
+## Adding a renderer
+
+A new technique (ASCII, say) gets its own folder, `registry/shad-fx/<renderer>/`,
+with its own engine, canvas, effects and `index.ts`, mirroring `dither/`. Items
+are `shad-fx-<renderer>-canvas`, `shad-fx-<renderer>-<effect>`, and an aggregate
+`shad-fx-<renderer>`. Add the aggregate to `shad-fx`'s `registryDependencies`
+and re-export the folder from `registry/shad-fx/index.ts`. When two renderers
+export the same symbol name, re-export them under namespaces there instead of
+`export *`. Extend both skills to cover it.
+
 ## Item names
 
-`dither-fx`, `dither-fx-<effect>`, `use-prefers-reduced-motion`, and the two
-`registry:file` skills `use-fx-skill` and `create-fx-skill`, whose
-`SKILL.md` files sit under `registry/dither-fx/skills/`. They are the
-publisher namespace's names (`@sekei/dither-fx-fire`), not the repo's, so the
-`dither-fx-` prefix stays even though `sekeidesign/dither-fx/dither-fx-fire`
-stutters. Renaming an item breaks every install command already written down.
+`shad-fx`, `shad-fx-<renderer>`, `shad-fx-<renderer>-<effect>`,
+`use-prefers-reduced-motion`, and the two `registry:file` skills `use-fx-skill`
+and `create-fx-skill`, whose `SKILL.md` files sit under
+`registry/shad-fx/skills/`. They are the publisher namespace's names
+(`@sekei/shad-fx-dither-fire`), not the repo's, so the `shad-fx-` prefix stays
+even though `sekeidesign/shad-fx/shad-fx-dither-fire` stutters. Renaming an item
+breaks every install command already written down.
+
+shad-fx is not affiliated with shadcn or shadcn/ui. Keep the disclaimer in the
+README, and do not use shadcn's logo or imply endorsement anywhere.
 
 ## Verifying an install
 
 In a scratch Next.js + Tailwind + shadcn project, from the default branch:
 
 ```bash
-npx shadcn@latest add sekeidesign/dither-fx/dither-fx-fire
-npx shadcn@latest add @sekei/dither-fx-fire
+npx shadcn@latest add sekeidesign/shad-fx/shad-fx-dither-fire
+npx shadcn@latest add @sekei/shad-fx-dither-fire
 ```
 
 Both must land identical files. `raw.githubusercontent.com` caches for roughly
@@ -91,13 +108,13 @@ straight after a push can serve the previous build.
 ## Out of scope here
 
 The docs page, playground and gallery live in `sekeidesign/sekei-xyz` at
-`/dither-fx`. That site also vendors a copy of these files under
-`components/dither-fx/`; fix bugs here and re-add there.
+`/shad-fx`. That site also vendors a copy of these files under
+`components/shad-fx/`; fix bugs here and re-add there.
 
 ## Listing `@sekei` in the shadcn registry directory
 
 The directory (<https://ui.shadcn.com/docs/registry/registry-index>) is what
-lets `npx shadcn add @sekei/dither-fx` work with no `registries` entry. Its
+lets `npx shadcn add @sekei/shad-fx` work with no `registries` entry. Its
 requirements, and where this repo stands on each:
 
 1. Open source and publicly accessible — the repo must be public, since every
@@ -121,9 +138,9 @@ placeholder for the real mark before submitting.
 ```json
 {
 	"name": "@sekei",
-	"homepage": "https://www.sekei.xyz/dither-fx",
+	"homepage": "https://www.sekei.xyz/shad-fx",
 	"url": "https://www.sekei.xyz/registry/{name}.json",
-	"description": "Ordered-dither canvas effects for React: fire, lightning, sonar rings, a light beam, a sloshing fluid, rain and snow, copied into your project as source.",
+	"description": "Canvas effects for React, copied into your project as source. Starts with ordered dither: fire, lightning, sonar rings, a light beam, a sloshing fluid, rain and snow.",
 	"author": "Piergiorgio Gonni",
 	"logo": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='var(--foreground)'><rect width='32' height='32' rx='8' fill-opacity='.12'/><path d='M8 8h4v4H8zM20 8h4v4h-4zM14 14h4v4h-4zM8 20h4v4H8zM20 20h4v4h-4z'/></svg>"
 }

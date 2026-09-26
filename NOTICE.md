@@ -4,8 +4,8 @@
 
 <https://github.com/Boring-Software-Inc/dither-kit>
 
-The dither-fx library in `registry/dither-fx/` began from dither-kit's
-ordered-dither rendering and is derived from it in these respects:
+The dither renderer of shad-fx, in `registry/shad-fx/dither/`, began from
+dither-kit's ordered-dither rendering and is derived from it in these respects:
 
 - Drawing into a low-resolution backing canvas and scaling it up with
   `image-rendering: pixelated`, sized as the CSS box divided by a cell size and
@@ -52,5 +52,5 @@ SOFTWARE.
 
 ## mulberry32
 
-The seeded random number generator in `registry/dither-fx/engine.ts` is
+The seeded random number generator in `registry/shad-fx/dither/engine.ts` is
 mulberry32 by Tommy Ettinger, released into the public domain.

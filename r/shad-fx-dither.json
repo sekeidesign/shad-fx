@@ -1,29 +1,30 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "dither-fx",
-  "title": "dither-fx",
+  "name": "shad-fx-dither",
+  "title": "shad-fx: dither",
   "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
-  "description": "The canvas, every effect, and a barrel that re-exports them.",
+  "description": "The dither canvas, every dither effect, and a barrel that re-exports them.",
   "registryDependencies": [
-    "sekeidesign/dither-fx/dither-fx-fire",
-    "sekeidesign/dither-fx/dither-fx-rings",
-    "sekeidesign/dither-fx/dither-fx-beam",
-    "sekeidesign/dither-fx/dither-fx-bolt",
-    "sekeidesign/dither-fx/dither-fx-fluid",
-    "sekeidesign/dither-fx/dither-fx-rain",
-    "sekeidesign/dither-fx/dither-fx-snow"
+    "sekeidesign/shad-fx/shad-fx-dither-fire",
+    "sekeidesign/shad-fx/shad-fx-dither-rings",
+    "sekeidesign/shad-fx/shad-fx-dither-beam",
+    "sekeidesign/shad-fx/shad-fx-dither-bolt",
+    "sekeidesign/shad-fx/shad-fx-dither-fluid",
+    "sekeidesign/shad-fx/shad-fx-dither-rain",
+    "sekeidesign/shad-fx/shad-fx-dither-snow"
   ],
   "files": [
     {
-      "path": "registry/dither-fx/index.ts",
+      "path": "registry/shad-fx/dither/index.ts",
       "content": "export { DitherCanvas, type DitherCanvasProps } from \"./dither-canvas\";\nexport { beam, type BeamOptions } from \"./effects/beam\";\nexport { bolt, type BoltOptions } from \"./effects/bolt\";\nexport { fire, type FireOptions } from \"./effects/fire\";\nexport { fluid, type FluidOptions } from \"./effects/fluid\";\nexport { rain, type RainOptions } from \"./effects/rain\";\nexport { rings, type RingsOptions } from \"./effects/rings\";\nexport { snow, type SnowOptions } from \"./effects/snow\";\nexport {\n\ttype Anchor,\n\ttype DitherEffect,\n\ttype DitherFrame,\n\tDitherEngine,\n\ttype EngineOptions,\n\thex,\n\tmix,\n\tPainter,\n\ttype Rgb,\n\ttype RgbInput,\n\ttoRgb,\n} from \"./engine\";\n",
       "type": "registry:lib",
-      "target": "@components/dither-fx/index.ts"
+      "target": "@components/shad-fx/dither/index.ts"
     }
   ],
-  "docs": "Everything imports from `@/components/dither-fx`. Working with an agent? `npx shadcn@latest add @sekei/use-fx-skill` installs a Claude Code skill for setting the effects up correctly.",
+  "docs": "Everything imports from `@/components/shad-fx/dither`. Working with an agent? `npx shadcn@latest add @sekei/use-fx-skill` installs a Claude Code skill for setting the effects up correctly.",
   "categories": [
-    "dither-fx"
+    "shad-fx",
+    "dither"
   ],
   "type": "registry:ui"
 }
