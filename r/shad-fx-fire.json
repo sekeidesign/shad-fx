@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "shad-fx-fire",
   "title": "shad-fx: fire",
-  "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+  "author": "Piergiorgio Gonni <https://www.sekei.design>",
   "description": "Rising flame front with embers.",
   "registryDependencies": [
     "sekeidesign/shad-fx/shad-fx-engine"

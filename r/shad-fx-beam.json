@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "shad-fx-beam",
   "title": "shad-fx: beam",
-  "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+  "author": "Piergiorgio Gonni <https://www.sekei.design>",
   "description": "Directional beam with drifting motes.",
   "registryDependencies": [
     "sekeidesign/shad-fx/shad-fx-engine"

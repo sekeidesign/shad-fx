@@ -22,7 +22,7 @@ canvas. Others, such as ASCII, will run the same effects unchanged.
 npx shadcn@latest add @sekei/shad-fx
 ```
 
-Docs, playground and gallery: [sekei.xyz/shad-fx](https://www.sekei.xyz/shad-fx)
+Docs, playground and gallery: [sekei.design/shad-fx](https://www.sekei.design/shad-fx)
 
 ## Install
 
@@ -40,7 +40,7 @@ resolves it and writes the `registries` entry into your `components.json`
 itself. To pin it yourself instead:
 
 ```bash
-npx shadcn registry add @sekei=https://www.sekei.xyz/registry/{name}.json
+npx shadcn registry add @sekei=https://www.sekei.design/registry/{name}.json
 ```
 
 Or by hand, in `components.json` or `package.json` — the CLI reads both:
@@ -48,7 +48,7 @@ Or by hand, in `components.json` or `package.json` — the CLI reads both:
 ```json
 {
 	"registries": {
-		"@sekei": "https://www.sekei.xyz/registry/{name}.json"
+		"@sekei": "https://www.sekei.design/registry/{name}.json"
 	}
 }
 ```

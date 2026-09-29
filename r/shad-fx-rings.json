@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "shad-fx-rings",
   "title": "shad-fx: rings",
-  "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+  "author": "Piergiorgio Gonni <https://www.sekei.design>",
   "description": "Concentric rings pulsing out from an anchor.",
   "registryDependencies": [
     "sekeidesign/shad-fx/shad-fx-engine"

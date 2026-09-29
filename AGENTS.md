@@ -4,7 +4,7 @@
 
 `r/` is generated and committed. `registry.json` and `registry/` are what the
 GitHub shorthand install reads; `r/` is what `@sekei` serves through
-`www.sekei.xyz/registry/*`. A stale `r/` means a namespace install gets old code
+`www.sekei.design/registry/*`. A stale `r/` means a namespace install gets old code
 while a shorthand install gets new code — the two paths disagree, which is worse
 than either being wrong on its own.
 
@@ -61,7 +61,7 @@ not in this one. Do not rewrite them to relative paths.
 Registry dependencies stay in `owner/repo/item` shorthand. They resolve from the
 moment the repo is public and do not depend on the shadcn registry directory
 being reachable. Do not rewrite them to `@sekei/...` or to absolute
-`sekei.xyz` URLs.
+`sekei.design` URLs.
 
 Leave `"utils"` bare. It resolves against shadcn/ui.
 
@@ -114,7 +114,7 @@ npx shadcn@latest add @sekei/shad-fx-dither @sekei/shad-fx-fire
 ```
 
 Both must land identical files. `raw.githubusercontent.com` caches for roughly
-five minutes and the sekei.xyz proxy passes that through, so a namespace install
+five minutes and the sekei.design proxy passes that through, so a namespace install
 straight after a push can serve the previous build.
 
 ## Out of scope here
@@ -134,7 +134,7 @@ requirements, and where this repo stands on each:
 2. `registry.json` must conform to the registry schema — `registry:build`
    validates it, and CI runs `registry:check`.
 3. Flat: `/registry.json` and `/<item>.json` at the registry root — `r/` is
-   flat and served at `www.sekei.xyz/registry/*`.
+   flat and served at `www.sekei.design/registry/*`.
 4. `files` in the index must carry no `content` — `r/registry.json` does not.
    The per-item files do, which is what an install needs.
 
@@ -150,8 +150,8 @@ appends this to `apps/v4/registry/directory.json`, then run
 ```json
 {
 	"name": "@sekei",
-	"homepage": "https://www.sekei.xyz/shad-fx",
-	"url": "https://www.sekei.xyz/registry/{name}.json",
+	"homepage": "https://www.sekei.design/shad-fx",
+	"url": "https://www.sekei.design/registry/{name}.json",
 	"description": "Canvas effects for React, copied into your project as source. Starts with ordered dither: fire, lightning, sonar rings, a light beam, a sloshing fluid, rain and snow.",
 	"author": "Piergiorgio Gonni",
 	"logo": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='var(--foreground)'><path d='M18 12H26V14H28V16H26V18H24V20H22V22H20V24H18V26H16V28H14V20H6V18H4V16H6V14H8V12H10V10H12V8H14V6H16V4H18V12Z'/></svg>"

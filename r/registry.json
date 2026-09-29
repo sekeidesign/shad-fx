@@ -1,15 +1,15 @@
 {
 	"$schema": "https://ui.shadcn.com/schema/registry.json",
 	"name": "sekei",
-	"homepage": "https://www.sekei.xyz/shad-fx",
-	"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+	"homepage": "https://www.sekei.design/shad-fx",
+	"author": "Piergiorgio Gonni <https://www.sekei.design>",
 	"items": [
 		{
 			"name": "use-prefers-reduced-motion",
 			"type": "registry:hook",
 			"title": "usePrefersReducedMotion",
 			"description": "Tracks the prefers-reduced-motion media query without tripping hydration.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"hooks",
 				"accessibility"
@@ -28,7 +28,7 @@
 			"type": "registry:lib",
 			"title": "shad-fx: engine",
 			"description": "The frame loop, the Surface and FxEffect contracts, seeded RNG and the colour helpers every renderer and effect builds on.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx",
 				"canvas"
@@ -52,7 +52,7 @@
 			"type": "registry:ui",
 			"title": "shad-fx: dither renderer",
 			"description": "DitherCanvas: fills its positioned parent with a pixelated canvas that draws any effect as Bayer-dithered cells.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx",
 				"dither",
@@ -88,7 +88,7 @@
 			"type": "registry:lib",
 			"title": "shad-fx: fire",
 			"description": "Rising flame front with embers.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx",
 				"effects"
@@ -111,7 +111,7 @@
 			"type": "registry:lib",
 			"title": "shad-fx: rings",
 			"description": "Concentric rings pulsing out from an anchor.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx",
 				"effects"
@@ -134,7 +134,7 @@
 			"type": "registry:lib",
 			"title": "shad-fx: beam",
 			"description": "Directional beam with drifting motes.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx",
 				"effects"
@@ -157,7 +157,7 @@
 			"type": "registry:lib",
 			"title": "shad-fx: bolt",
 			"description": "Intermittent lightning arcs on a randomised interval.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx",
 				"effects"
@@ -180,7 +180,7 @@
 			"type": "registry:lib",
 			"title": "shad-fx: fluid",
 			"description": "Sloshing liquid level with rising bubbles.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx",
 				"effects"
@@ -203,7 +203,7 @@
 			"type": "registry:lib",
 			"title": "shad-fx: rain",
 			"description": "Slanted streaks of rain, splashing on the floor.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx",
 				"effects"
@@ -226,7 +226,7 @@
 			"type": "registry:lib",
 			"title": "shad-fx: snow",
 			"description": "Drifting flakes settling into a drift along the floor.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx",
 				"effects"
@@ -249,7 +249,7 @@
 			"type": "registry:ui",
 			"title": "shad-fx",
 			"description": "The dither renderer, every effect, and a barrel that re-exports them.",
-			"author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx"
 			],
