@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "shad-fx-engine",
   "title": "shad-fx: engine",
-  "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+  "author": "Piergiorgio Gonni <https://www.sekei.design>",
   "description": "The frame loop, the Surface and FxEffect contracts, seeded RNG and the colour helpers every renderer and effect builds on.",
   "files": [
     {

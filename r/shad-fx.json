@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "shad-fx",
   "title": "shad-fx",
-  "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+  "author": "Piergiorgio Gonni <https://www.sekei.design>",
   "description": "The dither renderer, every effect, and a barrel that re-exports them.",
   "registryDependencies": [
     "sekeidesign/shad-fx/shad-fx-dither",

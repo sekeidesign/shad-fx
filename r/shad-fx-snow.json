@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "shad-fx-snow",
   "title": "shad-fx: snow",
-  "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+  "author": "Piergiorgio Gonni <https://www.sekei.design>",
   "description": "Drifting flakes settling into a drift along the floor.",
   "registryDependencies": [
     "sekeidesign/shad-fx/shad-fx-engine"

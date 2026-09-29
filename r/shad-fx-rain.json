@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "shad-fx-rain",
   "title": "shad-fx: rain",
-  "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+  "author": "Piergiorgio Gonni <https://www.sekei.design>",
   "description": "Slanted streaks of rain, splashing on the floor.",
   "registryDependencies": [
     "sekeidesign/shad-fx/shad-fx-engine"

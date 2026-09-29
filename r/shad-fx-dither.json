@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "shad-fx-dither",
   "title": "shad-fx: dither renderer",
-  "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+  "author": "Piergiorgio Gonni <https://www.sekei.design>",
   "description": "DitherCanvas: fills its positioned parent with a pixelated canvas that draws any effect as Bayer-dithered cells.",
   "registryDependencies": [
     "sekeidesign/shad-fx/shad-fx-engine",

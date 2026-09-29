@@ -2,7 +2,7 @@
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "use-prefers-reduced-motion",
   "title": "usePrefersReducedMotion",
-  "author": "Piergiorgio Gonni <https://www.sekei.xyz>",
+  "author": "Piergiorgio Gonni <https://www.sekei.design>",
   "description": "Tracks the prefers-reduced-motion media query without tripping hydration.",
   "files": [
     {
