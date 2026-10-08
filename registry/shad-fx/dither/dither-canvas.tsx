@@ -3,12 +3,12 @@
 import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { cn } from "@/lib/utils";
-import { type FxEffect, FxEngine } from "../engine";
+import { type Fx, FxEngine } from "../engine";
 import { DitherRenderer } from "./painter";
 
 export interface DitherCanvasProps {
-	/** A new reference restarts the simulation; the canvas itself is kept. */
-	effect: FxEffect;
+	/** From `useFx`. A different effect starts from scratch; the canvas is kept. */
+	effect: Fx;
 	/** Eases the effect in and out. Defaults to on. */
 	active?: boolean;
 	cell?: number;
@@ -71,7 +71,7 @@ export function DitherCanvas({
 	useEffect(() => {
 		if (runningRef.current === effect) return;
 		runningRef.current = effect;
-		engineRef.current?.setEffect(effect);
+		engineRef.current?.setFx(effect);
 	}, [effect]);
 
 	useEffect(() => {

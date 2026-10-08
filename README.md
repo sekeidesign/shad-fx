@@ -63,8 +63,8 @@ npx shadcn@latest add sekeidesign/shad-fx/shad-fx
 Files land under `components/shad-fx/` and `hooks/`, following your
 `components.json` aliases: renderers in `dither/`, effects in `effects/`. With
 the full library, import everything from `@/components/shad-fx`. With a
-renderer and a few effects, import from `@/components/shad-fx/dither` and
-`@/components/shad-fx/effects/<name>`.
+renderer and a few effects, import from `@/components/shad-fx/dither`,
+`@/components/shad-fx/effects/<name>` and `@/components/shad-fx/use-fx`.
 
 ## Items
 
@@ -79,7 +79,7 @@ renderer and a few effects, import from `@/components/shad-fx/dither` and
 | `shad-fx-fluid` | Engine |
 | `shad-fx-rain` | Engine |
 | `shad-fx-snow` | Engine |
-| `shad-fx-engine` | Nothing — the frame loop, the effect contract, seeded RNG, colour helpers |
+| `shad-fx-engine` | Nothing — the frame loop, the effect contract, `useFx`, seeded RNG, colour helpers |
 | `use-prefers-reduced-motion` | Nothing |
 
 ## Usage
@@ -88,31 +88,42 @@ The canvas fills its nearest positioned ancestor, so give the parent
 `relative`:
 
 ```tsx
-import { DitherCanvas, fire } from "@/components/shad-fx";
-import { useMemo } from "react";
+"use client";
 
-export function Card() {
-  const effect = useMemo(() => fire({ colors: ["#e5343a", "#f05100", "#fcbb00"] }), []);
+import { DitherCanvas, fire, useFx } from "@/components/shad-fx";
+
+export function Card({ height }: { height: number }) {
+  const fx = useFx(fire, { colors: ["#e5343a", "#f05100", "#fcbb00"], height });
 
   return (
     <div className="relative overflow-hidden rounded-lg">
-      <DitherCanvas effect={effect} />
+      <DitherCanvas effect={fx} />
       <p className="relative">Burning</p>
     </div>
   );
 }
 ```
 
-Build the effect once. A new `effect` reference restarts the simulation — the
-canvas and its observer survive, but particles and heat fields reset. `useMemo`
-with the options in the dependency array, or module scope when the options are
-constant.
+`useFx` builds the effect once and keeps it in step with its options. Pass them
+like any props, inline arrays included: a change applies in place, without
+restarting the simulation, and a removed option goes back to its default.
+Passing a different effect (`useFx(on ? fire : rain)`) starts that one fresh.
+
+For a value that changes every frame, such as a pointer position, skip the
+re-render and call `fx.set` from the handler:
+
+```tsx
+const fx = useFx(rings);
+<div onPointerMove={(e) => fx.set({ origin: [x, y] })}>
+```
+
+Outside React, `createFx(fire, options)` returns the same handle.
 
 ### `DitherCanvas`
 
 | Prop | Default | Notes |
 | --- | --- | --- |
-| `effect` | — | The effect to run. Keep the reference stable. |
+| `effect` | — | The effect to run, from `useFx`. |
 | `active` | `true` | Eases in and out. Drive it from hover for a reveal. |
 | `cell` | `2` | CSS px per dither cell. Lower is finer and costlier. |
 | `seed` | `1` | Seeds the RNG, so a given seed replays identically. |
@@ -124,8 +135,8 @@ never the only carrier of meaning.
 
 ### Effects
 
-Every effect is a factory returning an `FxEffect`, and every option is
-optional. `RgbInput` is a hex string or an `[r, g, b]` tuple. Where a count is
+Every effect is a factory returning an `FxEffect`, passed to `useFx`, and every
+option is optional and can change at any time. `RgbInput` is a hex string or an `[r, g, b]` tuple. Where a count is
 given at full intensity, it scales down as the effect eases out.
 
 #### `fire`
@@ -133,7 +144,7 @@ given at full intensity, it scales down as the effect eases out.
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `colors` | `[RgbInput, RgbInput, RgbInput]` | `["#e5343a", "#f05100", "#fcbb00"]` | Cold to hot: the tips, the body, the base. |
-| `height` | `number \| () => number` | `0.5` | Fraction of the height the flames reach at full intensity. A getter is re-read every frame. |
+| `height` | `number` | `0.5` | Fraction of the height the flames reach at full intensity. |
 | `rate` | `number` | `36` | Simulation steps per second. Lower reads chunkier. |
 | `embers` | `number` | `8` | Embers aloft at once, at full intensity. |
 
@@ -161,7 +172,7 @@ given at full intensity, it scales down as the effect eases out.
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `color` | `RgbInput` | `"#3080ff"` | Colour of the liquid and its bubbles. |
-| `level` | `number \| () => number` | `0.2` | Resting depth as a fraction of the height, at full intensity. A getter is re-read every frame. |
+| `level` | `number` | `0.2` | Resting depth as a fraction of the height, at full intensity. |
 | `slosh` | `number` | `0.09` | How far the surface tilts at either edge, as a fraction of the height. |
 | `tempo` | `number` | `0.15` | Slosh cycles per second. |
 | `bubbles` | `number` | `12` | Bubbles rising at once, at full intensity. |
@@ -183,7 +194,7 @@ given at full intensity, it scales down as the effect eases out.
 | `color` | `RgbInput` | `"#bedbff"` | Colour of the drops and splashes. |
 | `drops` | `number` | `64` | Drops in flight at once, at full intensity. |
 | `speed` | `number` | `1.4` | Fall speed of the nearest drops as a fraction of the height per second. |
-| `slant` | `number \| () => number` | `0.25` | Cells drifted sideways per cell fallen. Negative blows left. A getter is re-read every frame. |
+| `slant` | `number` | `0.25` | Cells drifted sideways per cell fallen. Negative blows left. |
 | `length` | `number` | `6` | Streak length of the nearest drops, in cells. |
 
 #### `snow`
@@ -196,9 +207,8 @@ given at full intensity, it scales down as the effect eases out.
 | `sway` | `number` | `0.6` | Sideways wander as a fraction of the fall speed. |
 | `settle` | `number` | `0.12` | Depth the snow settles to along the floor, as a fraction of the height. `0` for none. |
 
-`origin` and `target` take an `Anchor`: an `[x, y]` pair in 0–1 of the box, or a
-getter, which is re-read every frame, so an effect can follow something that
-moves without being rebuilt and losing what it has already simulated.
+`origin` and `target` take an `Anchor`: an `[x, y]` pair in 0–1 of the box. To
+follow something that moves, call `fx.set({ origin })` as it moves.
 
 ## Agent skills
 
@@ -209,9 +219,9 @@ the way this README does, from inside your project:
 npx skills add sekeidesign/shad-fx
 ```
 
-`use-shad-fx` covers placement, the stable-reference rule, anchors and cost.
+`use-shad-fx` covers placement, `useFx`, driving options and cost.
 `create-shad-fx` covers the `FxEffect` contract, the two shapes an effect
-takes, the `Surface` it paints into, reduced motion and parking. The CLI installs them wherever
+takes, the `Surface` it paints into, live options, reduced motion and parking. The CLI installs them wherever
 each agent you use looks for skills.
 
 ## Reduced motion

@@ -24,7 +24,8 @@ reason to skip it.
 registry.json          source of truth, the build's input
 registry/shad-fx/      the files themselves
   index.ts             top-level barrel: every renderer and effect
-  engine.ts            frame loop, Surface/Renderer/FxEffect contracts, RNG, colour
+  engine.ts            frame loop, Surface/Renderer/FxEffect contracts, createFx, RNG, colour
+  use-fx.ts            useFx: the React hook every renderer's canvas takes an effect from
   effects/             one file per effect, renderer-agnostic, plus particles.ts
   dither/              the ordered-dither renderer: Painter, DitherRenderer, DitherCanvas
   use-prefers-reduced-motion.ts   shared across renderers
@@ -45,9 +46,11 @@ not in this one. Do not rewrite them to relative paths.
 ## Adding an effect
 
 1. Write `registry/shad-fx/effects/<name>.ts`, exporting a factory that
-   returns an `FxEffect` and an `<Name>Options` interface. Copy the shape of
-   `fire.ts`: `paint(frame)` per frame, `idle()` when nothing is changing, and a
-   settled single frame under reduced motion. Paint only through the four
+   returns an `FxEffect<<Name>Options>` and an `<Name>Options` interface. Copy
+   the shape of `fire.ts`: options merged over `DEFAULTS` with `assign`,
+   `paint(frame)` per frame, `idle()` when nothing is changing, a settled
+   single frame under reduced motion, and `set(patch)` applying any option
+   live, without resetting what is on screen. Paint only through the four
    `Surface` calls on `frame.px`, and import only from `../engine` and
    `./particles`, never from a renderer. That is what keeps it runnable on
    every renderer.
@@ -79,8 +82,8 @@ at the JSDoc for detail rather than restating every table.
 A new technique (ASCII, say) gets its own folder, `registry/shad-fx/<renderer>/`,
 mirroring `dither/`: a class implementing `Surface` (what the four paint calls
 mean in this medium), a class implementing `Renderer` (size the backing store,
-put a frame on screen), a React canvas that hands both to `FxEngine`, and an
-`index.ts`. It reuses every effect as is. It is one item, `shad-fx-<renderer>`,
+put a frame on screen), a React canvas that takes an `Fx` from `useFx` as its
+`effect` prop and hands it and the renderer to `FxEngine`, and an `index.ts`. It reuses every effect as is. It is one item, `shad-fx-<renderer>`,
 depending on `shad-fx-engine`; add it to `shad-fx`'s `registryDependencies` and
 re-export the folder from `registry/shad-fx/index.ts`. When two renderers
 export the same symbol name, re-export them under namespaces there instead of

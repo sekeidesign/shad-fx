@@ -1,12 +1,12 @@
 ---
 name: create-shad-fx
-description: Write a new effect for shad-fx, the canvas effects library under components/shad-fx, or change how an existing one simulates. Use this whenever the user wants a dithered or pixelated animation that the shipped set (fire, bolt, rings, fluid, beam, rain, snow) does not cover - stars, smoke, sparks, static, embers, matrix rain, aurora, waves, confetti, a scanline sweep - or asks to add, create, build or extend a DitherCanvas effect, even if they call it a shader, a particle system or a background animation. Also use it when an effect restarts or flickers on the ease-out, never parks when inactive, ignores reduced motion, or looks different at different sizes or seeds.
+description: Write a new effect for shad-fx, the canvas effects library under components/shad-fx, or change how an existing one simulates. Use this whenever the user wants a dithered or pixelated animation that the shipped set (fire, bolt, rings, fluid, beam, rain, snow) does not cover - stars, smoke, sparks, static, embers, matrix rain, aurora, waves, confetti, a scanline sweep - or asks to add, create, build or extend a DitherCanvas effect, even if they call it a shader, a particle system or a background animation. Also use it when an effect restarts or flickers on the ease-out, restarts or ignores an option change, never parks when inactive, ignores reduced motion, or looks different at different sizes or seeds.
 ---
 
 # Writing a shad-fx effect
 
-An effect is a factory returning an `FxEffect`: three methods the engine
-calls, and nothing else. Everything visible is painted through a `Surface`
+An effect is a factory returning an `FxEffect`: four methods, three the
+engine calls every frame and one that applies new options, and nothing else. Everything visible is painted through a `Surface`
 into a grid of cells. The effect never knows which renderer draws those cells:
 the same effect runs on `DitherCanvas` today and on any renderer added later.
 Read these before writing, in this order; they are short:
@@ -21,10 +21,11 @@ Read these before writing, in this order; they are short:
 ## The contract
 
 ```ts
-interface FxEffect {
+interface FxEffect<O> {
   resize(cols: number, rows: number, rand: () => number): void;
   step(frame: FxFrame): boolean;       // true when the surface holds a new frame
   idle(): boolean;                     // true once nothing is left to animate
+  set(options: O): void;               // only the keys that changed
 }
 ```
 
@@ -130,15 +131,32 @@ there so the still frame can still fade in and out.
   while snow reseeding its flakes does not. Choose per effect, and say which
   in a comment.
 
-## Anchors and steerable options
+## Live options: `set`
 
-A position option is an `Anchor`: `readonly [x, y]` in 0–1 or a getter. Call
-`resolveAnchor(anchor)` every `step`, never only in `resize`, so a getter can
-follow a pointer. If a position feeds an expensive per-cell table (rings caches
-every cell's distance from its origin), rebuild the table only when the
-resolved value changes. Numeric options that a user might want to bind to live
-state (`height`, `level`, `slant`) take `number | (() => number)` and are read
-the same way, every frame.
+Every option can change while the effect runs, through `useFx` props or
+`fx.set`, and neither restarts the effect. Both arrive at `set` with only the
+keys that changed. A key present but `undefined` means the prop was removed
+and goes back to its default; `assign` from the engine handles that. Read
+options from the merged object, `o.speed`, at the point of use rather than
+destructuring them once, and most options are live for free.
+
+`set` only has to deal with what a value was turned into or built from:
+
+- **Derived values.** A colour converted once with `toRgb`: convert it again.
+  A per-cell table built from a position (rings caches every cell's distance
+  from `origin`): rebuild it, and only when that key is in the patch.
+- **Counts that size an array.** Top up or trim it (beam's motes, snow's
+  flakes) so what is on screen stays put. Never reset the whole simulation for
+  a count change.
+- **The reduced-motion still frame.** If it was built from the option (fire is
+  warmed to `height`, rain hangs `drops` drops), clear the `still` flag so the
+  next step builds it again. The engine wakes after every `set`, so a parked
+  still frame repaints once and parks again.
+- `set` can be called before the first `resize`. Anything sized in cells
+  waits for `resize` while `cols` is 0.
+
+A position is an `Anchor`, `readonly [x, y]` in 0–1. There are no getter
+options: something that moves calls `fx.set` as it moves.
 
 ## Reduced motion
 
@@ -153,32 +171,49 @@ should oscillate under reduce: pass `time = 0` into anything that uses `t`.
 
 ```ts
 export interface EmberOptions {
-  color?: RgbInput;                       // hex or [r, g, b]; convert once with toRgb
+  color?: RgbInput;                       // hex or [r, g, b]; convert with toRgb
   /** Embers aloft at once, at full intensity. */
   count?: number;
   /** Rise speed as a fraction of the height per second. */
   speed?: number;
 }
 
-export function embers({
-  color: colorInput = [252, 187, 0],
-  count = 24,
-  speed = 0.2,
-}: EmberOptions = {}): FxEffect { … }
+const DEFAULTS: Required<EmberOptions> = {
+  color: [252, 187, 0],
+  count: 24,
+  speed: 0.2,
+};
+
+export function embers(options: EmberOptions = {}): FxEffect<EmberOptions> {
+  let o = assign(DEFAULTS, DEFAULTS, options);
+  let color = toRgb(o.color);
+  // … state, and o.count / o.speed read where they are used …
+  return {
+    resize(c, r, random) { … },
+    step(frame) { … },
+    idle: () => lastReduced || !alive,
+    set(patch) {
+      o = assign(DEFAULTS, o, patch);
+      if ("color" in patch) color = toRgb(o.color);
+    },
+  };
+}
 ```
 
-Every option optional with a default, `RgbInput` for any colour, a one-line
-JSDoc on each stating the unit and whether it scales with intensity. That
-JSDoc is the consumer's documentation; there is no other.
+Every option optional with a default in `DEFAULTS`, `RgbInput` for any
+colour, a one-line JSDoc on each stating the unit and whether it scales with
+intensity. That JSDoc is the consumer's documentation; there is no other. An
+option with no default (beam's `target`) is typed out of `Required` and kept
+`undefined` in `DEFAULTS`.
 
 ## Wiring it in
 
 In a project that installed shad-fx: write
 `components/shad-fx/effects/<name>.ts`, importing only from `../engine` and
-`./particles`. If `components/shad-fx/index.ts` exists (the full library was
+`./particles`; never from React or `use-fx`. If `components/shad-fx/index.ts` exists (the full library was
 installed), add `export { <name>, type <Name>Options } from "./effects/<name>";`
 there; otherwise import the effect from its file. Then use it like any other:
-`<DitherCanvas effect={useMemo(() => embers(), [])} />`.
+`const fx = useFx(embers, { count: 12 })` and `<DitherCanvas effect={fx} />`.
 
 To contribute it upstream, the repo's AGENTS.md at
 https://github.com/sekeidesign/shad-fx covers the registry item and the
@@ -218,6 +253,11 @@ for (let i = 0; i < 180; i++) step(3 + i / 60, 0);
 console.log("eased out: lit", lit(), "idle", fx.idle(), "painting", step(7, 0)); // 0 true false
 step(8, 1, true); const a = px.image.data.slice(); step(9, 1, true);
 console.log("reduced: frames identical", a.every((v, i) => v === px.image.data[i])); // true
+
+fx.set({ color: "#00ff00" }); step(10, 1);                    // every option, in turn
+console.log("set applies:", px.image.data.some((v, i) => i % 4 === 1 && v === 255)); // true
+fx.set({ color: undefined }); step(11, 1);
+console.log("unset restores the default:", !px.image.data.some((v, i) => i % 4 === 1 && v === 255)); // true
 ```
 
 Then in the browser:
@@ -228,6 +268,9 @@ Then in the browser:
   should show in the performance panel.
 - Toggle reduced motion in devtools: one still frame, nothing moving.
 - Resize the box: no crash, no ghost of the old grid.
+- Change every option while it runs, and again under reduced motion: each
+  shows on the next frame, and none resets what is on screen except where a
+  comment in `set` says why.
 - Two canvases with the same `seed` show the same thing.
 - Search the file for `Math.random`, `Date.now` and `performance.now`. The
   only hit allowed is the pre-resize placeholder described above.
