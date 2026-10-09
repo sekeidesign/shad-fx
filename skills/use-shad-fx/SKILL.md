@@ -123,9 +123,12 @@ or read the computed colour once and pass it in.
 - `cell` (default `2`) is CSS px per dither cell. `1` is fine on a small badge;
   use `3` or `4` on a full-bleed hero, where it also reads more deliberately
   retro. `maxCols` / `maxRows` (default `640` / `400`) cap the grid regardless.
-- Each canvas has its own frame loop that runs only while something changes.
-  An inactive or settled effect costs nothing, so many small canvases are fine;
-  many large ones all animating at once are not.
+- Each canvas has its own frame loop that runs only while something changes
+  and the canvas is on screen. An inactive, settled or scrolled-away effect
+  costs nothing, so a long page of canvases is fine without any visibility
+  handling of your own; many large ones animating in view at once are not.
+  Do not unmount or toggle `active` on scroll to save work: it is already
+  paused, and toggling `active` would ease it out and back in.
 - Reduced motion is handled. Under `prefers-reduced-motion: reduce` each effect
   paints one settled frame and parks. Do not gate the canvas on it yourself.
 - The canvas is `aria-hidden` and `pointer-events-none`. It is decoration;

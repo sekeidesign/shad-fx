@@ -236,7 +236,9 @@ dropped. Nothing animates and the frame loop parks.
 
 The engine runs `requestAnimationFrame` only while something is changing, and
 stops once the eased intensity has settled and the effect reports `idle()`. An
-inactive effect costs nothing. Each frame is one `putImageData` over a grid
+inactive effect costs nothing. A canvas scrolled off screen pauses too, through
+an `IntersectionObserver`, and resumes where it left off as it comes back, so a
+page of them only pays for the ones in view. Each frame is one `putImageData` over a grid
 capped at 640×400 cells, not a `fillRect` per cell.
 
 ## Contributing

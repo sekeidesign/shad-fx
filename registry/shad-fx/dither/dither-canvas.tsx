@@ -60,8 +60,17 @@ export function DitherCanvas({
 			engine.resize(width, height);
 		});
 		ro.observe(wrap);
+		// Off screen, the loop pauses instead of painting what nobody sees, so a
+		// page of canvases only pays for the ones in view. The margin starts
+		// one a little before it scrolls in, so it is already moving.
+		const io = new IntersectionObserver(
+			([entry]) => engine.setVisible(entry.isIntersecting),
+			{ rootMargin: "100px" },
+		);
+		io.observe(wrap);
 		return () => {
 			ro.disconnect();
+			io.disconnect();
 			engine.destroy();
 			engineRef.current = null;
 		};

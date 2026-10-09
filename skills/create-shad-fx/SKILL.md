@@ -39,6 +39,8 @@ intensity has settled AND `idle()` is true AND (the target is 0 OR motion is
 reduced)**. Two consequences shape every effect:
 
 - While active and not reduced, the loop always runs. `idle()` can be anything.
+  (Off screen the engine pauses the loop outright, whatever the effect says,
+  and resumes with a normal `dt`; an effect needs nothing for that.)
 - After `active` goes false, the loop keeps running until `idle()` is true. An
   effect that never reports idle burns a frame loop forever on an invisible
   canvas. An effect that reports idle too early gets cut off mid-fade.

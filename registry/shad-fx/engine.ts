@@ -142,7 +142,8 @@ export interface Renderer {
 /**
  * Runs one effect against one renderer: eases `intensity` toward its target
  * and steps the effect on requestAnimationFrame only while something is
- * changing. An idle effect costs nothing.
+ * changing and the canvas is on screen. An idle or off-screen effect costs
+ * nothing.
  */
 export class FxEngine {
 	private surface: Surface | null = null;
@@ -155,6 +156,7 @@ export class FxEngine {
 	private intensity = 0;
 	private target = 0;
 	private reduced = false;
+	private hidden = false;
 
 	constructor(
 		private readonly renderer: Renderer,
@@ -184,6 +186,21 @@ export class FxEngine {
 		this.wake();
 	}
 
+	/**
+	 * Pauses the loop while the canvas is off screen, and picks up where it
+	 * left off when it comes back. Changes made meanwhile (`setActive`, `set`,
+	 * a resize) are kept and applied then.
+	 */
+	setVisible(visible: boolean) {
+		this.hidden = !visible;
+		if (visible) {
+			this.wake();
+		} else if (this.raf) {
+			cancelAnimationFrame(this.raf);
+			this.raf = 0;
+		}
+	}
+
 	setFx(fx: Fx) {
 		this.unsubscribe();
 		this.unsubscribe = fx.subscribe(this.wake);
@@ -199,7 +216,7 @@ export class FxEngine {
 	}
 
 	private readonly wake = () => {
-		if (this.raf) return;
+		if (this.raf || this.hidden) return;
 		this.last = 0;
 		this.raf = requestAnimationFrame(this.tick);
 	};

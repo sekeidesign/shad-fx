@@ -83,7 +83,9 @@ A new technique (ASCII, say) gets its own folder, `registry/shad-fx/<renderer>/`
 mirroring `dither/`: a class implementing `Surface` (what the four paint calls
 mean in this medium), a class implementing `Renderer` (size the backing store,
 put a frame on screen), a React canvas that takes an `Fx` from `useFx` as its
-`effect` prop and hands it and the renderer to `FxEngine`, and an `index.ts`. It reuses every effect as is. It is one item, `shad-fx-<renderer>`,
+`effect` prop, hands it and the renderer to `FxEngine`, and feeds an
+`IntersectionObserver` into `engine.setVisible` so it pauses off screen, as
+`DitherCanvas` does, and an `index.ts`. It reuses every effect as is. It is one item, `shad-fx-<renderer>`,
 depending on `shad-fx-engine`; add it to `shad-fx`'s `registryDependencies` and
 re-export the folder from `registry/shad-fx/index.ts`. When two renderers
 export the same symbol name, re-export them under namespaces there instead of
