@@ -25,14 +25,16 @@ export function useFx<O>(factory: FxFactory<O>, options?: NoInfer<O>): Fx<O> {
 		setBuilt({ factory, fx });
 	}
 
-	const last = useRef(options);
+	const last = useRef({ fx, options });
 	// Every render, after commit: only the keys whose values changed reach the
 	// effect, so an unchanged inline `colors` array costs nothing, and a value
-	// set through `fx.set` holds until its prop changes.
+	// set through `fx.set` holds until its prop changes. A new effect was built
+	// with these options, so it is compared against them, not the old one's.
 	useEffect(() => {
-		const prev = (last.current ?? {}) as Record<string, unknown>;
+		const seen = last.current.fx === fx ? last.current.options : options;
+		const prev = (seen ?? {}) as Record<string, unknown>;
 		const next = (options ?? {}) as Record<string, unknown>;
-		last.current = options;
+		last.current = { fx, options };
 		const patch: Record<string, unknown> = {};
 		let changed = false;
 		for (const key of new Set([...Object.keys(prev), ...Object.keys(next)])) {
