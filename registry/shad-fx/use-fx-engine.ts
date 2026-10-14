@@ -15,7 +15,7 @@ export interface FxEngineOptions {
  * and `deps`, what the renderer is built from, rebuild it.
  */
 export function useFxEngine<R extends Renderer>(
-	create: (canvas: HTMLCanvasElement) => R,
+	create: (canvas: HTMLCanvasElement, wrap: HTMLDivElement) => R,
 	{ effect, active, reduced, seed }: FxEngineOptions,
 	deps: DependencyList,
 ) {
@@ -30,14 +30,14 @@ export function useFxEngine<R extends Renderer>(
 		const wrap = wrapRef.current;
 		const canvas = canvasRef.current;
 		if (!wrap || !canvas) return;
-		const renderer = create(canvas);
+		const renderer = create(canvas, wrap);
 		const engine = new FxEngine(renderer, effect, { seed });
 		rendererRef.current = renderer;
 		engineRef.current = engine;
 		runningRef.current = effect;
+		engine.resize(wrap.clientWidth, wrap.clientHeight);
 		engine.setReduced(reduced);
 		engine.setActive(active);
-		// Fires once on observe, which sizes the first frame.
 		const ro = new ResizeObserver(([entry]) => {
 			const { width, height } = entry.contentRect;
 			engine.resize(width, height);

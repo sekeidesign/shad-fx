@@ -168,7 +168,8 @@ To use your own, load it the way the page already loads fonts (a `<link>`, an
 
 The canvas redraws once the font lands. With `next/font`,
 `fontFamily={geistMono.style.fontFamily}` passes the name it generated. A CSS
-variable such as `var(--font-geist-mono)` also works. Changing `fontFamily` or `fontSize` applies in place.
+variable such as `var(--font-geist-mono)` also works. Changing `fontFamily` applies in place. A change that resizes the glyph grid, as
+any `fontSize` change does, restarts the effect, as resizing the box does.
 Any font works, monospaced or not, since each glyph is centred in its own cell.
 
 ### Effects

@@ -28,6 +28,9 @@ export interface AsciiCanvasProps {
 	className?: string;
 }
 
+// A canvas font can't hold `var()`, so the family is read back computed from the wrapper.
+const computedFamily = (wrap: HTMLElement) => getComputedStyle(wrap).fontFamily || SYSTEM_MONO;
+
 /** Fills its positioned parent with a canvas drawing `effect` as coloured glyphs. */
 export function AsciiCanvas({
 	effect,
@@ -42,7 +45,8 @@ export function AsciiCanvas({
 }: AsciiCanvasProps) {
 	const reduced = usePrefersReducedMotion();
 	const { wrapRef, canvasRef, engineRef, rendererRef } = useFxEngine(
-		(canvas) => new AsciiRenderer(canvas, { ramp, maxCols, maxRows }),
+		(canvas, wrap) =>
+			new AsciiRenderer(canvas, { fontFamily: computedFamily(wrap), fontSize, ramp, maxCols, maxRows }),
 		{ effect, active, reduced, seed },
 		[maxCols, maxRows],
 	);
@@ -51,8 +55,7 @@ export function AsciiCanvas({
 		rendererRef.current?.setRamp(ramp ?? "");
 	}, [ramp, rendererRef]);
 
-	// A canvas font can't hold `var()`, so the family is read back computed from
-	// the wrapper. Re-runs after a rebuild, since a new renderer needs it too.
+	// Re-runs after a rebuild, so a web font still loading reaches the new renderer.
 	// biome-ignore lint/correctness/useExhaustiveDependencies: see above
 	useEffect(() => {
 		const wrap = wrapRef.current;
@@ -60,14 +63,15 @@ export function AsciiCanvas({
 		const engine = engineRef.current;
 		if (!wrap || !renderer || !engine) return;
 		let live = true;
-		const apply = () => {
-			renderer.setFont(getComputedStyle(wrap).fontFamily || SYSTEM_MONO, fontSize);
+		const family = computedFamily(wrap);
+		const apply = (force: boolean) => {
+			renderer.setFont(family, fontSize, force);
 			engine.resize(wrap.clientWidth, wrap.clientHeight);
 		};
-		apply();
+		apply(false);
 		const fonts = document.fonts;
 		if (fonts && !fonts.check(renderer.font)) {
-			fonts.load(renderer.font).then(() => live && apply(), () => {});
+			fonts.load(renderer.font).then(() => live && apply(true), () => {});
 		}
 		return () => {
 			live = false;

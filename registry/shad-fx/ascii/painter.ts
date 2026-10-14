@@ -228,8 +228,9 @@ export class AsciiRenderer implements Renderer {
 		return this.painter;
 	}
 
-	/** Re-measures on the next `resize`. Call it again once a web font loads. */
-	setFont(family: string, size: number) {
+	/** Re-measures on the next `resize` if the font changed, or with `force` once a web font loads. */
+	setFont(family: string, size: number, force = false) {
+		if (!force && family === this.fontFamily && size === this.fontSize) return;
 		this.fontFamily = family;
 		this.fontSize = size;
 		this.cw = 0;
