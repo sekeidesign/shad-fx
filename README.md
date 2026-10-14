@@ -5,9 +5,10 @@ registry — the files are copied into your project, not added as a dependency.
 
 Effects and renderers are separate. An effect (fire, lightning, sonar rings, a
 light beam, a sloshing fluid, rain and snow) simulates and paints into a grid of
-cells; a renderer decides what a cell looks like. The first renderer is ordered
-dither, which draws each cell as a Bayer-thresholded pixel on a pixelated
-canvas. Others, such as ASCII, will run the same effects unchanged.
+cells; a renderer decides what a cell looks like. Two ship: ordered dither,
+which draws each cell as a Bayer-thresholded pixel on a pixelated canvas, and
+ASCII, which draws coloured glyphs. Every effect runs on
+either, unchanged.
 
 > [!NOTE]
 > shad-fx is an independent project. It is not made, maintained or endorsed by
@@ -31,6 +32,7 @@ Take the whole library, or a renderer and the effects you want:
 ```bash
 npx shadcn@latest add @sekei/shad-fx                              # everything
 npx shadcn@latest add @sekei/shad-fx-dither @sekei/shad-fx-fire   # dither renderer + fire only
+npx shadcn@latest add @sekei/shad-fx-ascii @sekei/shad-fx-fire    # ASCII renderer + fire only
 ```
 
 An effect on its own has nothing to draw on, so always take a renderer with it.
@@ -61,9 +63,9 @@ npx shadcn@latest add sekeidesign/shad-fx/shad-fx
 ```
 
 Files land under `components/shad-fx/` and `hooks/`, following your
-`components.json` aliases: renderers in `dither/`, effects in `effects/`. With
+`components.json` aliases: renderers in `dither/` and `ascii/`, effects in `effects/`. With
 the full library, import everything from `@/components/shad-fx`. With a
-renderer and a few effects, import from `@/components/shad-fx/dither`,
+renderer and a few effects, import from `@/components/shad-fx/dither` (or `/ascii`),
 `@/components/shad-fx/effects/<name>` and `@/components/shad-fx/use-fx`.
 
 ## Items
@@ -72,6 +74,7 @@ renderer and a few effects, import from `@/components/shad-fx/dither`,
 | --- | --- |
 | `shad-fx` | Every renderer and effect below, plus an `index.ts` barrel |
 | `shad-fx-dither` | The dither renderer: `DitherCanvas`. Pulls in the engine, the reduced-motion hook, `utils` |
+| `shad-fx-ascii` | The ASCII renderer: `AsciiCanvas`. Pulls in the engine, the reduced-motion hook, `utils` |
 | `shad-fx-fire` | Engine |
 | `shad-fx-rings` | Engine |
 | `shad-fx-beam` | Engine |
@@ -132,6 +135,41 @@ Outside React, `createFx(fire, options)` returns the same handle.
 
 The element is `aria-hidden` and `pointer-events-none`: it is decoration, and
 never the only carrier of meaning.
+
+### `AsciiCanvas`
+
+The same effect, drawn as glyphs: swap `DitherCanvas` for `AsciiCanvas`.
+
+| Prop | Default | Notes |
+| --- | --- | --- |
+| `effect` | — | The effect to run, from `useFx`. |
+| `active` | `true` | Eases in and out. |
+| `fontFamily` | system mono | Any CSS `font-family`, by name. |
+| `fontSize` | `10` | CSS px. A glyph cell is one advance wide and two tall. |
+| `ramp` | `".:-=+*#%@"` | Glyphs from lightest to densest. Changes in place. |
+| `seed` | `1` | Seeds the RNG. |
+| `maxCols` / `maxRows` | `320` / `160` | Ceiling on the glyph grid. |
+| `className` | — | Merged onto the wrapper. |
+
+Each glyph covers two square cells of the effect's grid, one per half, so
+rings stay round and rain keeps its slant even though glyphs are tall. The two
+halves pick the glyph: evenly lit cells take the ramp, a lit top half takes
+`'` or `"`, a lit bottom half `.` or `_`, and a `glint` becomes `+` or `*`.
+Colours are the effect's own.
+
+The font defaults to the system monospace (`ui-monospace`, then SF Mono,
+Menlo, Consolas and so on, ending at `monospace`), so nothing is downloaded.
+To use your own, load it the way the page already loads fonts (a `<link>`, an
+`@font-face`, `next/font`) and pass its name, as you would in CSS:
+
+```tsx
+<AsciiCanvas effect={fx} fontFamily="'Geist Mono', monospace" />
+```
+
+The canvas redraws once the font lands. With `next/font`,
+`fontFamily={geistMono.style.fontFamily}` passes the name it generated. A CSS
+variable such as `var(--font-geist-mono)` also works. Changing `fontFamily` or `fontSize` applies in place.
+Any font works, monospaced or not, since each glyph is centred in its own cell.
 
 ### Effects
 
@@ -226,7 +264,7 @@ each agent you use looks for skills.
 
 ## Reduced motion
 
-`DitherCanvas` reads `prefers-reduced-motion` through `useSyncExternalStore`, so
+Both canvases read `prefers-reduced-motion` through `useSyncExternalStore`, so
 it is correct on the server and updates when the setting changes. Under reduce,
 each effect paints one settled frame and stops: fire is pre-warmed and still,
 rings sit at three fixed radii, rain and snow hang mid-fall, particles are
@@ -238,8 +276,12 @@ The engine runs `requestAnimationFrame` only while something is changing, and
 stops once the eased intensity has settled and the effect reports `idle()`. An
 inactive effect costs nothing. A canvas scrolled off screen pauses too, through
 an `IntersectionObserver`, and resumes where it left off as it comes back, so a
-page of them only pays for the ones in view. Each frame is one `putImageData` over a grid
-capped at 640×400 cells, not a `fillRect` per cell.
+page of them only pays for the ones in view. A dither frame is one `putImageData` over a grid
+capped at 640×400 cells, not a `fillRect` per cell. An ASCII frame never calls
+`fillText`: glyphs are drawn once into an atlas, each lit glyph is one blit
+from it, and a single scaled draw colours them all. Blank cells cost nothing.
+A full-bleed hero with every glyph lit takes about 2ms a frame on a
+GPU-backed canvas, and several times that on a software one.
 
 ## Contributing
 

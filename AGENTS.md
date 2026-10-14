@@ -28,6 +28,7 @@ registry/shad-fx/      the files themselves
   use-fx.ts            useFx: the React hook every renderer's canvas takes an effect from
   effects/             one file per effect, renderer-agnostic, plus particles.ts
   dither/              the ordered-dither renderer: Painter, DitherRenderer, DitherCanvas
+  ascii/               the glyph renderer: AsciiPainter, AsciiRenderer, AsciiCanvas
   use-prefers-reduced-motion.ts   shared across renderers
 r/                     built output, committed
 scripts/check-registry.mjs
@@ -79,7 +80,7 @@ at the JSDoc for detail rather than restating every table.
 
 ## Adding a renderer
 
-A new technique (ASCII, say) gets its own folder, `registry/shad-fx/<renderer>/`,
+A new technique (halftone, say) gets its own folder, `registry/shad-fx/<renderer>/`,
 mirroring `dither/`: a class implementing `Surface` (what the four paint calls
 mean in this medium), a class implementing `Renderer` (size the backing store,
 put a frame on screen), a React canvas that takes an `Fx` from `useFx` as its
@@ -91,11 +92,11 @@ re-export the folder from `registry/shad-fx/index.ts`. When two renderers
 export the same symbol name, re-export them under namespaces there instead of
 `export *`. Extend both skills to cover it.
 
-Cells need not be square. A renderer whose cells are not (glyphs are roughly
-twice as tall as wide) will squash anything an effect measures in cells, such
-as rings' radii. When that matters, add the cell aspect to `FxFrame` and have
-the affected effects correct for it; adding a field does not break existing
-effects.
+Cells need not be square. A renderer whose cells are not will squash anything
+an effect measures in cells, such as rings' radii. Prefer what `ascii/` does:
+give the `Surface` square cells and fold several into one on-screen cell (two
+per glyph there), so no effect changes. Only when that cannot work, add the
+cell aspect to `FxFrame` and have the affected effects correct for it.
 
 ## Item names
 

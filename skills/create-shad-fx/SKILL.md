@@ -8,7 +8,8 @@ description: Write a new effect for shad-fx, the canvas effects library under co
 An effect is a factory returning an `FxEffect`: four methods, three the
 engine calls every frame and one that applies new options, and nothing else. Everything visible is painted through a `Surface`
 into a grid of cells. The effect never knows which renderer draws those cells:
-the same effect runs on `DitherCanvas` today and on any renderer added later.
+the same effect runs on `DitherCanvas`, on `AsciiCanvas`, and on any renderer
+added later.
 Read these before writing, in this order; they are short:
 
 1. `components/shad-fx/engine.ts` — the contract, the `Surface`, the loop.
@@ -94,7 +95,8 @@ Start every paint with `px.clear()`. Then:
 
 - `px.dither(x, y, density, color, gain = 1)` — a field sample. The dither
   renderer paints every cell in range at one of two alpha tiers and lets the
-  Bayer threshold decide which; another renderer maps density its own way. Use
+  Bayer threshold decide which; the ASCII renderer treats density as coverage
+  and lets the glyph ramp carry it. Use
   it for fields and gradients: heat, glow, a fading band. Density
   is 0–1; shape it with a power (`h ** 0.85`) rather than a threshold.
 - `px.blend(x, y, color, alpha)` — a solid source-over cell. Use it for
@@ -102,9 +104,13 @@ Start every paint with `px.clear()`. Then:
   end to end breaks into dots below the threshold; rain blends the near part
   of each streak and dithers only the tail.
 - `px.glint(x, y, color, alpha, arms)` — a sparkle: centre plus four arms that
-  flare in with `arms` (0–1). Pair with `twinkle(t, phase, hz)` and `arms(tw)`
+  flare in with `arms` (0–1). On ASCII the arms do not light neighbours: once
+  they flare the glyph becomes `+`, then `*`. Pair with `twinkle(t, phase, hz)` and `arms(tw)`
   from `particles.ts` for a wink that flashes rather than pulses; `hz` is the
   per-particle wink speed.
+- On ASCII each glyph is two of your cells, top and bottom, so `rows` is
+  even and a lone lit cell reads as `'` or `.` depending on which half it is.
+  Cells stay square on both renderers: measure in cells as usual.
 - Drawing off-grid is a no-op in every call, so let particles fly past the
   edges and cull them later.
 
@@ -224,7 +230,11 @@ rebuild; the effect file itself is identical.
 ## Before calling it done
 
 Most of this can be checked without a browser. The dither renderer's `Painter`
-needs only a global `ImageData`, so an effect runs in Node under `npx tsx`:
+needs only a global `ImageData`, so an effect runs in Node under `npx tsx`.
+`AsciiPainter` from `ascii/painter.ts` needs nothing at all: build it as
+`new AsciiPainter(cols, lines)`, pass its `rows` (twice `lines`) to the effect,
+and `compose(glyphTable(ASCII_RAMP), glyphs, colors)` returns the lit glyph
+count, so the same checks run against it:
 
 ```ts
 // scratch/smoke.mts — npx tsx scratch/smoke.mts

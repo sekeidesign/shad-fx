@@ -1,6 +1,6 @@
 ---
 name: use-shad-fx
-description: Set up and use shad-fx, the canvas effects installed under components/shad-fx (DitherCanvas and useFx, plus fire, bolt, rings, fluid, beam, rain, snow). Use this whenever the user wants a pixelated, dithered, retro or 8-bit animated background or accent on a card, hero, button, avatar or section - flames, lightning, sonar or ripple rings, a spotlight or god-ray beam, a liquid or water fill, rain or snow - or mentions DitherCanvas, shad-fx or @sekei, even if they don't name the library. Also use it when an existing DitherCanvas restarts, flickers, does not show, sits on top of the content, or costs too much.
+description: Set up and use shad-fx, the canvas effects installed under components/shad-fx (DitherCanvas, AsciiCanvas and useFx, plus fire, bolt, rings, fluid, beam, rain, snow). Use this whenever the user wants a pixelated, dithered, ASCII, text-mode, terminal-style, retro or 8-bit animated background or accent on a card, hero, button, avatar or section - flames, lightning, sonar or ripple rings, a spotlight or god-ray beam, a liquid or water fill, rain or snow - or mentions DitherCanvas, AsciiCanvas, shad-fx or @sekei, even if they don't name the library. Also use it when an existing DitherCanvas or AsciiCanvas restarts, flickers, does not show, sits on top of the content, or costs too much.
 ---
 
 # Using shad-fx
@@ -8,23 +8,26 @@ description: Set up and use shad-fx, the canvas effects installed under componen
 shad-fx splits effects from renderers. An effect (in `effects/`) simulates and
 paints cells; a renderer draws them. The dither renderer, `DitherCanvas`, paints
 each cell as a Bayer-thresholded pixel on a low-resolution canvas scaled up
-without smoothing. One canvas runs one effect. The files live in the project,
+without smoothing. The ASCII renderer, `AsciiCanvas`, draws coloured glyphs in
+the system monospace by default. Both take the same `effect`; one canvas runs one effect. The files live in the project,
 under `components/shad-fx/`, so read them when in doubt: every option is
 documented where it is declared.
 
 ## Install, if it is not there yet
 
-Look for `components/shad-fx/dither/dither-canvas.tsx` and
+Look for `components/shad-fx/dither/` or `components/shad-fx/ascii/` and
 `components/shad-fx/effects/`. If they are missing:
 
 ```bash
 npx shadcn@latest add @sekei/shad-fx                              # everything
 npx shadcn@latest add @sekei/shad-fx-dither @sekei/shad-fx-fire   # renderer + one effect
+npx shadcn@latest add @sekei/shad-fx-ascii @sekei/shad-fx-fire    # ASCII instead
 ```
 
 An effect alone has nothing to draw on; always install a renderer with it.
 With the full library, import from `@/components/shad-fx`. Otherwise import
-`DitherCanvas` from `@/components/shad-fx/dither`, `useFx` from
+`DitherCanvas` from `@/components/shad-fx/dither` (or `AsciiCanvas` from
+`@/components/shad-fx/ascii`), `useFx` from
 `@/components/shad-fx/use-fx` and each effect from
 `@/components/shad-fx/effects/<name>`.
 
@@ -129,6 +132,16 @@ or read the computed colour once and pass it in.
   handling of your own; many large ones animating in view at once are not.
   Do not unmount or toggle `active` on scroll to save work: it is already
   paused, and toggling `active` would ease it out and back in.
+- On `AsciiCanvas`, `fontSize` (default `10`) sets the glyph cell and so the
+  cost: each glyph covers two of the effect's cells, one per half. The font
+  defaults to the system monospace stack, so nothing is downloaded. To use
+  another, pass its name as `fontFamily`, as in CSS:
+  `fontFamily="'Geist Mono', monospace"`. The canvas does not load the font;
+  load it as the project already does, and the canvas redraws once it lands.
+  With `next/font`, pass `geistMono.style.fontFamily`. A `var()` also works. `ramp` (default
+  `".:-=+*#%@"`, lightest first) swaps the glyphs in place. Blank glyphs cost
+  nothing, so sparse effects (snow, bolt) are cheaper than dense ones (fire,
+  fluid). `maxCols` / `maxRows` default to `320` / `160` glyphs.
 - Reduced motion is handled. Under `prefers-reduced-motion: reduce` each effect
   paints one settled frame and parks. Do not gate the canvas on it yourself.
 - The canvas is `aria-hidden` and `pointer-events-none`. It is decoration;
