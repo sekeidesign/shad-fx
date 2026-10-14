@@ -9,7 +9,7 @@ shad-fx splits effects from renderers. An effect (in `effects/`) simulates and
 paints cells; a renderer draws them. The dither renderer, `DitherCanvas`, paints
 each cell as a Bayer-thresholded pixel on a low-resolution canvas scaled up
 without smoothing. The ASCII renderer, `AsciiCanvas`, draws coloured glyphs in
-the project's mono font. Both take the same `effect`; one canvas runs one effect. The files live in the project,
+the system monospace by default. Both take the same `effect`; one canvas runs one effect. The files live in the project,
 under `components/shad-fx/`, so read them when in doubt: every option is
 documented where it is declared.
 
@@ -132,10 +132,13 @@ or read the computed colour once and pass it in.
   handling of your own; many large ones animating in view at once are not.
   Do not unmount or toggle `active` on scroll to save work: it is already
   paused, and toggling `active` would ease it out and back in.
-- On `AsciiCanvas`, `fontSize` (default `12`) sets the glyph cell and so the
-  cost: each glyph covers two of the effect's cells, one per half. The font is
-  the wrapper's computed `font-family`, which is `font-mono`; pass a font class
-  in `className` to change it, not a `fontFamily` prop. `ramp` (default
+- On `AsciiCanvas`, `fontSize` (default `10`) sets the glyph cell and so the
+  cost: each glyph covers two of the effect's cells, one per half. The font
+  defaults to the system monospace stack, so nothing is downloaded. To use
+  another, pass its name as `fontFamily`, as in CSS:
+  `fontFamily="'Geist Mono', monospace"`. The canvas does not load the font;
+  load it as the project already does, and the canvas redraws once it lands.
+  With `next/font`, pass `geistMono.style.fontFamily`. A `var()` also works. `ramp` (default
   `".:-=+*#%@"`, lightest first) swaps the glyphs in place. Blank glyphs cost
   nothing, so sparse effects (snow, bolt) are cheaper than dense ones (fire,
   fluid). `maxCols` / `maxRows` default to `320` / `160` glyphs.

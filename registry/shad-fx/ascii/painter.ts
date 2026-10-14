@@ -1,5 +1,12 @@
 import { clamp01, type Renderer, type Rgb, type Surface } from "../engine";
 
+/**
+ * The default font: whatever monospace the system already has, so nothing is
+ * downloaded. The same stack as Tailwind's `font-mono`.
+ */
+export const SYSTEM_MONO =
+	'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+
 /** Lightest to densest, for a glyph whose two halves are about equally lit. */
 export const ASCII_RAMP = ".:-=+*#%@";
 
@@ -214,8 +221,8 @@ export class AsciiRenderer implements Renderer {
 	constructor(
 		private readonly canvas: HTMLCanvasElement,
 		{
-			fontSize = 12,
-			fontFamily = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+			fontSize = 10,
+			fontFamily = SYSTEM_MONO,
 			ramp = ASCII_RAMP,
 			maxCols = 320,
 			maxRows = 160,

@@ -5,4 +5,5 @@ export {
 	AsciiPainter,
 	AsciiRenderer,
 	glyphTable,
+	SYSTEM_MONO,
 } from "./painter";

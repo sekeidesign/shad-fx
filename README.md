@@ -7,7 +7,7 @@ Effects and renderers are separate. An effect (fire, lightning, sonar rings, a
 light beam, a sloshing fluid, rain and snow) simulates and paints into a grid of
 cells; a renderer decides what a cell looks like. Two ship: ordered dither,
 which draws each cell as a Bayer-thresholded pixel on a pixelated canvas, and
-ASCII, which draws coloured glyphs in your mono font. Every effect runs on
+ASCII, which draws coloured glyphs. Every effect runs on
 either, unchanged.
 
 > [!NOTE]
@@ -144,17 +144,32 @@ The same effect, drawn as glyphs: swap `DitherCanvas` for `AsciiCanvas`.
 | --- | --- | --- |
 | `effect` | — | The effect to run, from `useFx`. |
 | `active` | `true` | Eases in and out. |
-| `fontSize` | `12` | CSS px. A glyph cell is one advance wide and two tall. |
+| `fontFamily` | system mono | Any CSS `font-family`, by name. |
+| `fontSize` | `10` | CSS px. A glyph cell is one advance wide and two tall. |
 | `ramp` | `".:-=+*#%@"` | Glyphs from lightest to densest. Changes in place. |
 | `seed` | `1` | Seeds the RNG. |
 | `maxCols` / `maxRows` | `320` / `160` | Ceiling on the glyph grid. |
-| `className` | — | Merged onto the wrapper, which is `font-mono`: the font comes from here. |
+| `className` | — | Merged onto the wrapper. |
 
 Each glyph covers two square cells of the effect's grid, one per half, so
 rings stay round and rain keeps its slant even though glyphs are tall. The two
 halves pick the glyph: evenly lit cells take the ramp, a lit top half takes
 `'` or `"`, a lit bottom half `.` or `_`, and a `glint` becomes `+` or `*`.
 Colours are the effect's own.
+
+The font defaults to the system monospace (`ui-monospace`, then SF Mono,
+Menlo, Consolas and so on, ending at `monospace`), so nothing is downloaded.
+To use your own, load it the way the page already loads fonts (a `<link>`, an
+`@font-face`, `next/font`) and pass its name, as you would in CSS:
+
+```tsx
+<AsciiCanvas effect={fx} fontFamily="'Geist Mono', monospace" />
+```
+
+The canvas redraws once the font lands. With `next/font`,
+`fontFamily={geistMono.style.fontFamily}` passes the name it generated. A CSS
+variable such as `var(--font-geist-mono)` also works. Changing `fontFamily` applies in place.
+Any font works, monospaced or not, since each glyph is centred in its own cell.
 
 ### Effects
 

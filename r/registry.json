@@ -92,7 +92,7 @@
 			"name": "shad-fx-ascii",
 			"type": "registry:ui",
 			"title": "shad-fx: ASCII renderer",
-			"description": "AsciiCanvas: fills its positioned parent with a canvas that draws any effect as coloured glyphs in the project's mono font.",
+			"description": "AsciiCanvas: fills its positioned parent with a canvas that draws any effect as coloured glyphs, in the system monospace or a font you pass.",
 			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx",
@@ -100,7 +100,7 @@
 				"canvas"
 			],
 			"version": "0.1.0",
-			"docs": "Pair it with any effect: `const fx = useFx(fire, { height: 0.6 })`, then `<AsciiCanvas effect={fx} />`. The font is the wrapper's `font-mono`; pass a font class in `className` to change it. Options passed to useFx update in place without restarting the simulation.",
+			"docs": "Pair it with any effect: `const fx = useFx(fire, { height: 0.6 })`, then `<AsciiCanvas effect={fx} />`. The font defaults to the system monospace, so nothing is downloaded; pass a font-family name as `fontFamily`, as in CSS, to use your own. Options passed to useFx update in place without restarting the simulation.",
 			"registryDependencies": [
 				"sekeidesign/shad-fx/shad-fx-engine",
 				"sekeidesign/shad-fx/use-prefers-reduced-motion",

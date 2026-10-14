@@ -4,13 +4,19 @@ import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { cn } from "@/lib/utils";
 import { type Fx, FxEngine } from "../engine";
-import { AsciiRenderer } from "./painter";
+import { AsciiRenderer, SYSTEM_MONO } from "./painter";
 
 export interface AsciiCanvasProps {
 	/** From `useFx`. A different effect starts from scratch; the canvas is kept. */
 	effect: Fx;
 	/** Eases the effect in and out. Defaults to on. */
 	active?: boolean;
+	/**
+	 * Any CSS `font-family`, by name: `"'Geist Mono', monospace"`. A `var()`
+	 * works too. Defaults to the system monospace, so nothing is downloaded. A
+	 * web font must be loaded by the page; the canvas redraws once it lands.
+	 */
+	fontFamily?: string;
 	/** CSS px. A glyph cell is one advance wide and two tall. */
 	fontSize?: number;
 	/** Lightest to densest, for evenly lit glyphs. Defaults to `.:-=+*#%@`. */
@@ -19,19 +25,18 @@ export interface AsciiCanvasProps {
 	/** Ceiling on the glyph grid, so a large box can't cost a large frame. */
 	maxCols?: number;
 	maxRows?: number;
-	/** The font comes from here: `font-mono` unless a class overrides it. */
 	className?: string;
 }
 
 /**
  * Fills its positioned parent with a canvas that draws `effect` as coloured
- * glyphs. The font is the wrapper's computed one, so it follows the project's
- * `font-mono` and any font class passed in `className`.
+ * glyphs in `fontFamily`.
  */
 export function AsciiCanvas({
 	effect,
 	active = true,
-	fontSize = 12,
+	fontFamily = SYSTEM_MONO,
+	fontSize = 10,
 	ramp,
 	seed = 1,
 	maxCols,
@@ -43,22 +48,50 @@ export function AsciiCanvas({
 	const engineRef = useRef<FxEngine | null>(null);
 	const rendererRef = useRef<AsciiRenderer | null>(null);
 	const runningRef = useRef(effect);
+	const fontRef = useRef(fontFamily);
 	const reduced = usePrefersReducedMotion();
 
+	// A canvas font can't hold `var()`, so the family is set on the wrapper and
+	// read back computed. Measured before a web font has loaded, the cell is
+	// the fallback's, so it is measured again once `document.fonts` has it.
+	// Bumping `pending` drops the reload of a family that has since changed.
+	const pending = useRef(0);
+	const refont = () => {
+		const wrap = wrapRef.current;
+		const renderer = rendererRef.current;
+		const engine = engineRef.current;
+		if (!wrap || !renderer || !engine) return;
+		const apply = () => {
+			renderer.setFont(getComputedStyle(wrap).fontFamily || SYSTEM_MONO);
+			engine.resize(wrap.clientWidth, wrap.clientHeight);
+		};
+		apply();
+		const token = ++pending.current;
+		document.fonts?.load(renderer.font).then(() => {
+			if (token === pending.current && rendererRef.current === renderer) apply();
+		}, () => {});
+	};
+
 	// As in DitherCanvas: only what the renderer is built from rebuilds the
-	// engine. `effect`, `active`, `reduced` and `ramp` are seeded into a fresh
-	// one here and applied on their own below.
+	// engine. `effect`, `active`, `reduced`, `ramp` and `fontFamily` are seeded
+	// into a fresh one here and applied on their own below.
 	// biome-ignore lint/correctness/useExhaustiveDependencies: see above
 	useEffect(() => {
 		const wrap = wrapRef.current;
 		const canvas = canvasRef.current;
 		if (!wrap || !canvas) return;
-		const family = getComputedStyle(wrap).fontFamily || undefined;
-		const renderer = new AsciiRenderer(canvas, { fontSize, fontFamily: family, ramp, maxCols, maxRows });
+		const renderer = new AsciiRenderer(canvas, {
+			fontSize,
+			fontFamily: getComputedStyle(wrap).fontFamily || SYSTEM_MONO,
+			ramp,
+			maxCols,
+			maxRows,
+		});
 		const engine = new FxEngine(renderer, effect, { seed });
 		rendererRef.current = renderer;
 		engineRef.current = engine;
 		runningRef.current = effect;
+		fontRef.current = fontFamily;
 		engine.resize(wrap.clientWidth, wrap.clientHeight);
 		engine.setReduced(reduced);
 		engine.setActive(active);
@@ -72,17 +105,8 @@ export function AsciiCanvas({
 			{ rootMargin: "100px" },
 		);
 		io.observe(wrap);
-		// A web font that has not loaded yet measured and drew as its fallback.
-		// Once it lands, re-measure: the cell may change size, and the effect
-		// only restarts if that changes the grid.
-		let live = true;
-		document.fonts?.load(renderer.font).then(() => {
-			if (!live) return;
-			renderer.setFont(getComputedStyle(wrap).fontFamily || family || "monospace");
-			engine.resize(wrap.clientWidth, wrap.clientHeight);
-		}, () => {});
+		refont();
 		return () => {
-			live = false;
 			ro.disconnect();
 			io.disconnect();
 			engine.destroy();
@@ -110,27 +134,21 @@ export function AsciiCanvas({
 		rendererRef.current?.setRamp(ramp ?? "");
 	}, [ramp]);
 
-	// A class can change the font. Re-read it in place rather than rebuilding,
-	// so a class toggled on hover does not restart the effect.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: className is the trigger
+	// In place, so changing the font only restarts the effect when the new
+	// glyph cell changes the size of the grid.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: fontFamily is the trigger
 	useEffect(() => {
-		const wrap = wrapRef.current;
-		const renderer = rendererRef.current;
-		if (!wrap || !renderer) return;
-		const family = getComputedStyle(wrap).fontFamily;
-		if (!family || family === renderer.family) return;
-		renderer.setFont(family);
-		engineRef.current?.resize(wrap.clientWidth, wrap.clientHeight);
-	}, [className]);
+		if (fontRef.current === fontFamily) return;
+		fontRef.current = fontFamily;
+		refont();
+	}, [fontFamily]);
 
 	return (
 		<div
 			ref={wrapRef}
 			aria-hidden
-			className={cn(
-				"pointer-events-none absolute inset-0 overflow-hidden font-mono",
-				className,
-			)}
+			className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}
+			style={{ fontFamily }}
 		>
 			<canvas ref={canvasRef} className="absolute top-0 left-0" />
 		</div>
