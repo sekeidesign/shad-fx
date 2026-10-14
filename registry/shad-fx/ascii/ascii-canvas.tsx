@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { cn } from "@/lib/utils";
-import { type Fx, FxEngine } from "../engine";
+import type { Fx } from "../engine";
+import { useFxEngine } from "../use-fx-engine";
 import { AsciiRenderer, SYSTEM_MONO } from "./painter";
 
 export interface AsciiCanvasProps {
@@ -27,6 +28,9 @@ export interface AsciiCanvasProps {
 	className?: string;
 }
 
+// A canvas font can't hold `var()`, so the family is read back computed from the wrapper.
+const computedFamily = (wrap: HTMLElement) => getComputedStyle(wrap).fontFamily || SYSTEM_MONO;
+
 /** Fills its positioned parent with a canvas drawing `effect` as coloured glyphs. */
 export function AsciiCanvas({
 	effect,
@@ -39,67 +43,19 @@ export function AsciiCanvas({
 	maxRows,
 	className,
 }: AsciiCanvasProps) {
-	const wrapRef = useRef<HTMLDivElement>(null);
-	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const engineRef = useRef<FxEngine | null>(null);
-	const rendererRef = useRef<AsciiRenderer | null>(null);
-	const runningRef = useRef(effect);
 	const reduced = usePrefersReducedMotion();
-
-	// As in DitherCanvas, only what the renderer is built from rebuilds it.
-	// The font effect below sizes it.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: see above
-	useEffect(() => {
-		const wrap = wrapRef.current;
-		const canvas = canvasRef.current;
-		if (!wrap || !canvas) return;
-		const renderer = new AsciiRenderer(canvas, { ramp, maxCols, maxRows });
-		const engine = new FxEngine(renderer, effect, { seed });
-		rendererRef.current = renderer;
-		engineRef.current = engine;
-		runningRef.current = effect;
-		engine.setReduced(reduced);
-		engine.setActive(active);
-		const ro = new ResizeObserver(([entry]) => {
-			const { width, height } = entry.contentRect;
-			engine.resize(width, height);
-		});
-		ro.observe(wrap);
-		const io = new IntersectionObserver(
-			([entry]) => engine.setVisible(entry.isIntersecting),
-			{ rootMargin: "100px" },
-		);
-		io.observe(wrap);
-		return () => {
-			ro.disconnect();
-			io.disconnect();
-			engine.destroy();
-			engineRef.current = null;
-			rendererRef.current = null;
-		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [seed, maxCols, maxRows]);
-
-	useEffect(() => {
-		if (runningRef.current === effect) return;
-		runningRef.current = effect;
-		engineRef.current?.setFx(effect);
-	}, [effect]);
-
-	useEffect(() => {
-		engineRef.current?.setReduced(reduced);
-	}, [reduced]);
-
-	useEffect(() => {
-		engineRef.current?.setActive(active);
-	}, [active]);
+	const { wrapRef, canvasRef, engineRef, rendererRef } = useFxEngine(
+		(canvas, wrap) =>
+			new AsciiRenderer(canvas, { fontFamily: computedFamily(wrap), fontSize, ramp, maxCols, maxRows }),
+		{ effect, active, reduced, seed },
+		[maxCols, maxRows],
+	);
 
 	useEffect(() => {
 		rendererRef.current?.setRamp(ramp ?? "");
-	}, [ramp]);
+	}, [ramp, rendererRef]);
 
-	// A canvas font can't hold `var()`, so the family is read back computed from
-	// the wrapper. Re-runs after a rebuild, since a new renderer needs it too.
+	// Re-runs after a rebuild, so a web font still loading reaches the new renderer.
 	// biome-ignore lint/correctness/useExhaustiveDependencies: see above
 	useEffect(() => {
 		const wrap = wrapRef.current;
@@ -107,14 +63,15 @@ export function AsciiCanvas({
 		const engine = engineRef.current;
 		if (!wrap || !renderer || !engine) return;
 		let live = true;
-		const apply = () => {
-			renderer.setFont(getComputedStyle(wrap).fontFamily || SYSTEM_MONO, fontSize);
+		const family = computedFamily(wrap);
+		const apply = (force: boolean) => {
+			renderer.setFont(family, fontSize, force);
 			engine.resize(wrap.clientWidth, wrap.clientHeight);
 		};
-		apply();
+		apply(false);
 		const fonts = document.fonts;
 		if (fonts && !fonts.check(renderer.font)) {
-			fonts.load(renderer.font).then(() => live && apply(), () => {});
+			fonts.load(renderer.font).then(() => live && apply(true), () => {});
 		}
 		return () => {
 			live = false;
