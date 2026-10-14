@@ -27,13 +27,13 @@
 			"name": "shad-fx-engine",
 			"type": "registry:lib",
 			"title": "shad-fx: engine",
-			"description": "The frame loop, the Surface and FxEffect contracts, the useFx hook, seeded RNG and the colour helpers every renderer and effect builds on.",
+			"description": "The frame loop, the Surface and FxEffect contracts, the useFx and useFxEngine hooks, seeded RNG and the colour helpers every renderer and effect builds on.",
 			"author": "Piergiorgio Gonni <https://www.sekei.design>",
 			"categories": [
 				"shad-fx",
 				"canvas"
 			],
-			"version": "0.2.0",
+			"version": "0.3.0",
 			"files": [
 				{
 					"path": "registry/shad-fx/engine.ts",
@@ -49,6 +49,11 @@
 					"path": "registry/shad-fx/use-fx.ts",
 					"type": "registry:lib",
 					"target": "@components/shad-fx/use-fx.ts"
+				},
+				{
+					"path": "registry/shad-fx/use-fx-engine.ts",
+					"type": "registry:lib",
+					"target": "@components/shad-fx/use-fx-engine.ts"
 				}
 			]
 		},
@@ -63,7 +68,7 @@
 				"dither",
 				"canvas"
 			],
-			"version": "0.2.0",
+			"version": "0.2.1",
 			"docs": "Pair it with any effect: `const fx = useFx(fire, { height: 0.6 })`, then `<DitherCanvas effect={fx} />`. Options passed to useFx update in place without restarting the simulation. The ordered-dither rendering derives from dither-kit (MIT, https://github.com/Boring-Software-Inc/dither-kit). See https://github.com/sekeidesign/shad-fx/blob/main/NOTICE.md",
 			"registryDependencies": [
 				"sekeidesign/shad-fx/shad-fx-engine",
@@ -99,7 +104,7 @@
 				"ascii",
 				"canvas"
 			],
-			"version": "0.1.0",
+			"version": "0.1.1",
 			"docs": "Pair it with any effect: `const fx = useFx(fire, { height: 0.6 })`, then `<AsciiCanvas effect={fx} />`. The font defaults to the system monospace, so nothing is downloaded; pass a font-family name as `fontFamily`, as in CSS, to use your own. Options passed to useFx update in place without restarting the simulation.",
 			"registryDependencies": [
 				"sekeidesign/shad-fx/shad-fx-engine",

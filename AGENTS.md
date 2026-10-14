@@ -26,6 +26,7 @@ registry/shad-fx/      the files themselves
   index.ts             top-level barrel: every renderer and effect
   engine.ts            frame loop, Surface/Renderer/FxEffect contracts, createFx, RNG, colour
   use-fx.ts            useFx: the React hook every renderer's canvas takes an effect from
+  use-fx-engine.ts     useFxEngine: the engine, observers and prop sync every canvas shares
   effects/             one file per effect, renderer-agnostic, plus particles.ts
   dither/              the ordered-dither renderer: Painter, DitherRenderer, DitherCanvas
   ascii/               the glyph renderer: AsciiPainter, AsciiRenderer, AsciiCanvas
@@ -84,9 +85,10 @@ A new technique (halftone, say) gets its own folder, `registry/shad-fx/<renderer
 mirroring `dither/`: a class implementing `Surface` (what the four paint calls
 mean in this medium), a class implementing `Renderer` (size the backing store,
 put a frame on screen), a React canvas that takes an `Fx` from `useFx` as its
-`effect` prop, hands it and the renderer to `FxEngine`, and feeds an
-`IntersectionObserver` into `engine.setVisible` so it pauses off screen, as
-`DitherCanvas` does, and an `index.ts`. It reuses every effect as is. It is one item, `shad-fx-<renderer>`,
+`effect` prop and hands it and the renderer to `useFxEngine`, which sizes it,
+pauses it off screen and keeps its props in step, as `DitherCanvas` does, and
+an `index.ts`. A `Surface` writing straight RGBA should blend through the
+engine's `blendOver`, so every renderer mixes colour the same way. It reuses every effect as is. It is one item, `shad-fx-<renderer>`,
 depending on `shad-fx-engine`; add it to `shad-fx`'s `registryDependencies` and
 re-export the folder from `registry/shad-fx/index.ts`. When two renderers
 export the same symbol name, re-export them under namespaces there instead of

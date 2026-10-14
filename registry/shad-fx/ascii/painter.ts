@@ -1,4 +1,4 @@
-import { clamp01, type Renderer, type Rgb, type Surface } from "../engine";
+import { blendOver, clamp01, type Renderer, type Rgb, type Surface } from "../engine";
 
 /** The system monospace, so nothing is downloaded. Tailwind's `font-mono` stack. */
 export const SYSTEM_MONO =
@@ -80,22 +80,9 @@ export class AsciiPainter implements Surface {
 	}
 
 	/** Source-over onto whatever is already in the sample. */
-	blend(x: number, y: number, [r, g, b]: Rgb, alpha: number) {
+	blend(x: number, y: number, color: Rgb, alpha: number) {
 		if (x < 0 || y < 0 || x >= this.cols || y >= this.rows || alpha <= 0) return;
-		const i = y * this.cols + x;
-		const d = this.px[i];
-		const da = (d >>> 24) / 255;
-		const sa = clamp01(alpha);
-		if (da === 0) {
-			this.px[i] = ((Math.round(sa * 255) << 24) | (b << 16) | (g << 8) | r) >>> 0;
-			return;
-		}
-		const oa = sa + da * (1 - sa);
-		const w = sa / oa;
-		const nr = r * w + (d & 255) * (1 - w);
-		const ng = g * w + ((d >>> 8) & 255) * (1 - w);
-		const nb = b * w + ((d >>> 16) & 255) * (1 - w);
-		this.px[i] = ((Math.round(oa * 255) << 24) | (nb << 16) | (ng << 8) | nr) >>> 0;
+		blendOver(this.px, y * this.cols + x, color, alpha);
 	}
 
 	/** Density is coverage: the glyph ramp does the dithering. */
