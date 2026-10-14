@@ -166,7 +166,7 @@ export class AsciiRenderer implements Renderer {
 	private colors: ImageData | null = null;
 	private colors32 = new Uint32Array(0);
 	private glyphs = new Uint8Array(0);
-	private lut = new Uint8Array(0);
+	private lut: Uint8Array = new Uint8Array(0);
 	private ramp = "";
 	private fontFamily: string;
 	private fontSize: number;
